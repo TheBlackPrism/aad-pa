@@ -1,5 +1,9 @@
 import math
 import numpy as np
+import pandas as pd
+import matplotlib as matplot
+import matplotlib.pyplot as plt, mpld3
+
 
 class K_Means:
     """description of class"""
@@ -23,13 +27,13 @@ class K_Means:
         return distance
 
     
-    def main():
-        if __name__ == "__main__":
-            main()
+    def fit(self, data):
 
+        #initialize centroids, using first k elements in the dataset
         for i in range(self.k):
             self.centroids[i] = data[i]
 
+        #main iterations
         for i in range(self.max_iterations):
             self.classes = {}
 
@@ -41,11 +45,13 @@ class K_Means:
                 classification = distances.index(min(distances))
                 self.classes[classification].append(features)
         
+            #re-calculate centroids
             previous = dict(self.centroids)
 
             for classification in self.classes:
                 self.centroids[classification] = np.average(self.classes[classification], axis = 0)
             
+            #check if clusters are optimal
             isOptimal = True
 
             for centroid in self.centroids:
@@ -57,6 +63,28 @@ class K_Means:
 
             if isOptimal:
                 break 
+
+    def main():
+        #read data here
+
+
+        km = K_Means(3)
+        km.fit(X) #X contains data
+
+        #Plot
+        colors = 10*["r","g","c","b","k"]
+
+        for centroid in km.centroids:
+            plt.scatter(km.centroids[centroid][0],km.centroids[centroid][1],s = 130, marker = "x")
+
+        for classification in km.classes:
+            color = colors[classification]
+            for features in km.classes[classification]:
+                plt.scatter(features[0], features[1],color = color, s = 30)
+        mpld3.show()
+
+        if __name__ == "__main__":
+            main()
 
 
 
