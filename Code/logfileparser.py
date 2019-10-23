@@ -10,7 +10,7 @@ The four steps are:
 
 '''
 
-URL = "../Logfiles/Labeled/normalTrafficTraining.csv"
+URL = "../Logfiles/Labeled/normalTrafficTraining.txt"
 #URL = "../Logfiles/Unlabeled/access.log01.txt"
 
 import pandas as pa
@@ -66,29 +66,63 @@ def download_data():
 
 def read_data():
     data = []
+    request = []
     file = open(URL, "r")
 
-    if file.mod == 'r':
-        lines = file.readlines
-        isreadingblock = False
-        wasemptyline = False
+    if file.mode == 'r':
+        lines = file.readlines()
 
+        isreadingblock = False
+        wasemptyline = True
+        
+        # line is never validated
         for line in lines:
-            if isreadingblock and line == "":
-                wasemptyline = True
-            if line=="":
-                continue
-            el
+            if line == '\n':
+                if isreadingblock and not wasemptyline:
+                    wasemptyline = True
+
+                elif wasemptyline:
+                    isreadingblock = False
+                    data.append(get_dictionary_from_request(request))
+                    request = []
+            else:
+                if wasemptyline and isreadingblock:
+                    request.append("Response: " + line)
+
+                elif wasemptyline:
+                    isreadingblock = True
+                    wasemptyline = False
+                    args = line.split(" ", 1)
+                    request.append("Type: " + args[0])
+                    request.append("Request: " + args[1])
+
+                elif not isreadingblock:
+                    isreadingblock = True
+                    wasemptyline = False
+                    request.append(line)
+
+                else:
+                    request.append(line)
     else:
         print("File could not be opened")
 
+    return data
 
+def get_dictionary_from_request(request):
+    dict = {}
+
+    for pair in request:
+        s = pair.split(": ", 1)
+        print(s)
+        dict[s[0]] = s[1]
+
+    return dict
 
 if __name__ == '__main__':
     # Loading the data set from URL
     print("Loading data from {}".format(URL))
-    frame = download_data()
+    #frame = download_data()
     dict = read_data()
     # Process data into feature and label arrays
-    print("Processing {} samples with {} attributes".format(len(frame.index), len(frame.columns)))
+    #print("Processing {} samples with {} attributes".format(len(frame.index), len(frame.columns)))
 
