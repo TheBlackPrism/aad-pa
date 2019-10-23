@@ -75,7 +75,8 @@ def read_data():
         isreadingblock = False
         wasemptyline = True
         
-        # line is never validated
+        # Attention! line is never validated
+        # Whole parser is rather fragile
         for line in lines:
             if line == '\n':
                 if isreadingblock and not wasemptyline:
@@ -112,8 +113,7 @@ def get_dictionary_from_request(request):
     dict = {}
 
     for pair in request:
-        s = pair.split(": ", 1)
-        print(s)
+        s = pair.replace("\n", "").split(": ", 1)
         dict[s[0]] = s[1]
 
     return dict
@@ -121,8 +121,10 @@ def get_dictionary_from_request(request):
 if __name__ == '__main__':
     # Loading the data set from URL
     print("Loading data from {}".format(URL))
+
     #frame = download_data()
     dict = read_data()
+
     # Process data into feature and label arrays
     #print("Processing {} samples with {} attributes".format(len(frame.index), len(frame.columns)))
 
