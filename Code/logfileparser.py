@@ -28,8 +28,10 @@ def read_data(url):
                     isreadingblock = True
                     wasemptyline = False
                     args = line.split(" ", 1)
-                    request.append("Type: " + args[0])
-                    request.append("Request: " + args[1])
+
+                    if len(args) == 2:
+                        request.append("Type: " + args[0])
+                        request.append("Request: " + args[1])
 
                 elif not isreadingblock:
                     isreadingblock = True
@@ -47,7 +49,17 @@ def __get_dictionary_from_request(request):
     dict = {}
 
     for pair in request:
-        s = pair.replace("\n", "").split(": ", 1)
-        dict[s[0]] = s[1]
+        s = pair.split(": ", 1)
+        if len(s) == 2:
+            dict[s[0]] = s[1]
+        else:
+            dict['Unknown'] = s[0]
 
     return dict
+
+if __name__ == '__main__':
+
+    # Test by reading all the datasets
+    dict = read_data("../Logfiles/Labeled/normalTrafficTraining.txt")
+    dict = read_data("../Logfiles/Labeled/normalTrafficTest.txt")
+    dict = read_data("../Logfiles/Labeled/anomalousTrafficTest.txt")
