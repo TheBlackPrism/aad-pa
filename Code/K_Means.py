@@ -64,15 +64,32 @@ class K_Means:
 
             if isOptimal:
                 break 
+        return self.classes
+
+    def get_means(classes):
+        means = []
+        for m in means:
+
+
+    def get_radius(classes):
+        radius = []
+
+        for c in classes:
+
+
 
     def main():
+        clusters = {}
+        means = []
         #read data here
         data = parser.read_data('url')
 
 
 
         km = K_Means(3)
-        km.fit(data)
+        clusters = km.fit(data)
+        means = self.centroids
+        radius = get_radius(clusters)
 
         #Plot
         colors = 10*["r","g","c","b","k"]
