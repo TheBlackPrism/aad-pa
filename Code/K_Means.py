@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import matplotlib as matplot
 import matplotlib.pyplot as plt, mpld3
+import logfileparser as parser
 
 
 class K_Means:
@@ -66,10 +67,12 @@ class K_Means:
 
     def main():
         #read data here
+        data = parser.read_data('url')
+
 
 
         km = K_Means(3)
-        km.fit(X) #X contains data
+        km.fit(data)
 
         #Plot
         colors = 10*["r","g","c","b","k"]
