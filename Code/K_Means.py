@@ -115,6 +115,9 @@ class K_Means:
         test_data = parser.read_data('url')
         test_requests = []
         test_request_lengths = []
+        dist = 0
+        counter = 0
+        malicious_requests = []
 
 
         for i in range(len(test_data)):
@@ -122,9 +125,23 @@ class K_Means:
             test_requests[i] = tmp.get('Request', None) #returns None if key doesn't exist
             test_req = test_requests[i]
             test_request_lengths[i] = len(test_req)
-        
-        for i in range(len(radius)):
 
+        
+        for i in range(len(test_request_lengths)):
+            for m,r in radius:
+                dist = Euclidean_distance(test_request_lengths[i],m)
+                if dist > r:
+                    malicious_requests[counter] = test_request_lengths[i]
+                    counter += 1
+
+
+        if len(malicious_requests) > 0:
+            print("No malicious requests detected.")
+        else:
+            for i in range(len(malicious_requests)):
+                print(malicious_requests[i])
+
+            
     
 
         #Plot
