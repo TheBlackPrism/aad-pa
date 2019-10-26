@@ -30,6 +30,8 @@ class K_Means:
     
     def fit(self, data):
 
+        clusters = {}
+
         #initialize centroids, using first k elements in the dataset
         for i in range(self.k):
             self.centroids[i] = data[i]
@@ -39,8 +41,8 @@ class K_Means:
             self.classes = {}
 
             for j in range(self.k):
-                self.classes[i] = []
-
+                self.classes[j] = []
+            
             for features in data:
                 distances = [Euclidean_distance(features, self.centroids[centroid]) for centroid in self.centroids]
                 classification = distances.index(min(distances))
@@ -63,14 +65,23 @@ class K_Means:
                     isOptimal = False
 
             if isOptimal:
+                
+                #clusters = dict(self.classes)
+                #for classification in self.classes:
+                    #clusters[classification] = self.centroids[classification]
                 break 
-        return self.classes
+        return centroids
 
 
-    def get_radius(classes,centroids):
-        radius = []
+    def get_radius(classes,centroids,attr):
+        radius = {}
 
-        for c in classes:
+        for cent in centroids:
+            max_Dist = Euclidean_distance(cent,attr)
+            radius[cent] = ((np.absolute(classellipsis[cent] + 1)/np.absolute(classes[cent])) * max_Dist
+        return radius
+
+
 
 
 
@@ -82,11 +93,14 @@ class K_Means:
         data = parser.read_data('url')
 
 
-
+        #fit data
         km = K_Means(3)
-        clusters = km.fit(data)
-        means = self.centroids
-        radius = get_radius(clusters)
+        means = km.fit(data)
+        radius = get_radius(km.classes,means,'attr')
+
+        #test new data
+
+
 
         #Plot
         colors = 10*["r","g","c","b","k"]
