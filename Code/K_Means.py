@@ -66,15 +66,12 @@ class K_Means:
                 break 
         return self.classes
 
-    def get_means(classes):
-        means = []
-        for m in means:
 
-
-    def get_radius(classes):
+    def get_radius(classes,centroids):
         radius = []
 
         for c in classes:
+
 
 
 
