@@ -80,8 +80,7 @@ class K_Means:
             max_Dist = Euclidean_distance(cent,attr)
             radius[cent] = ((np.absolute(classellipsis[cent] + 1)/np.absolute(classes[cent])) * max_Dist
         return radius
-
-
+        
 
 
 
@@ -89,8 +88,22 @@ class K_Means:
     def main():
         clusters = {}
         means = []
+        requests = []
+        request_lengths = []
         #read data here
         data = parser.read_data('url')
+
+        #Test feature could be length of request.
+        #Parse data, extract requests and put their lengths in a list
+        for i in range(len(data)):
+            tmp = data[i]
+            requests[i] = tmp.get('Request', None)
+            req = requests[i]
+            request_lengths[i] = len(req)
+        
+        
+
+
 
 
         #fit data
