@@ -91,12 +91,12 @@ class K_Means:
         requests = []
         request_lengths = []
         #read data here
-        data = parser.read_data('url')
+        training_data = parser.read_data('url')
 
         #Test feature could be length of request.
         #Parse data, extract requests and put their lengths in a list
-        for i in range(len(data)):
-            tmp = data[i]
+        for i in range(len(training_data)):
+            tmp = training_data[i]
             requests[i] = tmp.get('Request', None)
             req = requests[i]
             request_lengths[i] = len(req)
@@ -108,12 +108,24 @@ class K_Means:
 
         #fit data
         km = K_Means(3)
-        means = km.fit(data)
+        means = km.fit(request_lengths)
         radius = get_radius(km.classes,means,'attr')
 
         #test new data
+        test_data = parser.read_data('url')
+        test_requests = []
+        test_request_lengths = []
 
 
+        for i in range(len(test_data)):
+            tmp = test_data[i]
+            test_requests[i] = tmp.get('Request', None) #returns None if key doesn't exist
+            test_req = test_requests[i]
+            test_request_lengths[i] = len(test_req)
+        
+        for i in range(len(radius)):
+
+    
 
         #Plot
         colors = 10*["r","g","c","b","k"]
