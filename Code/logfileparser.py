@@ -1,3 +1,33 @@
+# Dictionary Structure Example of a Request
+#
+# Type: GET
+# Request: http://localhost:8080/tienda1/index.jsp HTTP/1.1
+# User-Agent: Mozilla/5.0 (compatible; Konqueror/3.5; Linux) KHTML/3.5.8 (like Gecko)
+# Pragma: no-cache
+# Cache-control: no-cache
+# Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5
+# Accept-Encoding : x-gzip, x-deflate, gzip, deflate
+# Accept-Charset: utf-8, utf-8;q=0.5, *;q=0.5
+# Accept-Language: en
+# Host: localhost:8080
+# Cookie: JSESSIONID=1F767F17239C9B670A39E9B10C3825F4
+# Connection: close
+#
+# Type: POST
+# Request: http://localhost:8080/tienda1/publico/anadir.jsp HTTP/1.1
+# User-Agent: Mozilla/5.0 (compatible; Konqueror/3.5; Linux) KHTML/3.5.8 (like Gecko)
+# Pragma: no-cache
+# Cache-control: no-cache
+# Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5
+# Accept-Encoding: x-gzip, x-deflate, gzip, deflate
+# Accept-Charset: utf-8, utf-8;q=0.5, *;q=0.5
+# Accept-Language: en
+# Host: localhost:8080
+# Cookie: JSESSIONID=1F767F17239C9B670A39E9B10C3825F4
+# Connection: close
+# Content-Length: 68
+# Response: id=3&nombre=Vino+Rioja&precio=100&cantidad=55&B1=A%F1adir+al+carrito
+
 def read_data(url):
     data = []
     request = []
