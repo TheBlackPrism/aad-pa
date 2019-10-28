@@ -116,15 +116,16 @@ def main():
         req = requests[i]
         request_lengths[i] = len(req)
 
+    print("\n**************************")
+    print("Training model:")
     #fit data
     km = K_Means(3)
     means = km.fit(request_lengths)
     radius = km.get_radius('attr')
-    print("Radius: ", radius)
-    print("Means:", means)
+    print("Centeroid: Radius =", radius)
 
     #test clean data
-    print("\n**************************")
+    print("**************************")
     print("Testing normal traffic:")
     test_data = parser.read_data('../Logfiles/Labeled/normalTrafficTest.txt')
     test_requests = []
@@ -149,10 +150,10 @@ def main():
         accuracy = 100 - (len(malicious_requests) / len(test_data) * 100)
         print("Number of test requests: %d" % len(test_data))
         print("Number of malicious requests detected: %d" % len(malicious_requests))
-        print("Accuracy: %f" % accuracy)
+        print("Accuracy: %.3f%%" % accuracy)
 
     #test anomalious data
-    print("\n**************************")
+    print("**************************")
     print("Testing anomalous traffic:")
     test_data = parser.read_data('../Logfiles/Labeled/anomalousTrafficTest.txt')
     test_requests = []
@@ -176,7 +177,8 @@ def main():
         accuracy = (len(malicious_requests) / len(test_data) * 100)
         print("Number of test requests: %d" % len(test_data))
         print("Number of malicious requests detected: %d" % len(malicious_requests))
-        print("Accuracy: %f" % accuracy)
+        print("Accuracy: %.3f%%" % accuracy)
+    print("**************************\n")
 
     #Plot
     colors = 10 * ["r","g","c","b","k"]
