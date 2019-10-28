@@ -102,6 +102,7 @@ def get_malicious_requests(data, radius):
 def main():
     clusters = {}
     means = []
+    k = 6
 
     #read data here
     training_data = parser.read_data('../Logfiles/Labeled/normalTrafficTraining.txt')
@@ -118,8 +119,9 @@ def main():
 
     print("\n**************************")
     print("Training model:")
+    print("k = %d" % k)
     #fit data
-    km = K_Means(3)
+    km = K_Means(k)
     means = km.fit(request_lengths)
     radius = km.get_radius('attr')
     print("Centeroid: Radius =", radius)
