@@ -87,6 +87,18 @@ def Euclidean_distance(p,q):
         distance = squared_distance(squared_distance)
     return distance
 
+def get_malicious_requests(data, radius):
+    malicious_requests = []
+    for i in range(len(data)):
+        counter = 0
+        for m in radius:
+            dist = Euclidean_distance(data[i],m)
+            if dist > radius[m]:
+                counter += 1
+                if counter == len(radius):
+                    malicious_requests.append(data[i])
+    return malicious_requests
+
 def main():
     clusters = {}
     means = []
@@ -110,7 +122,10 @@ def main():
     radius = km.get_radius('attr')
     print("Radius: ", radius)
     print("Means:", means)
-    #test new data
+
+    #test clean data
+    print("\n**************************")
+    print("Testing normal traffic:")
     test_data = parser.read_data('../Logfiles/Labeled/normalTrafficTest.txt')
     test_requests = []
     test_request_lengths = []
@@ -126,21 +141,41 @@ def main():
         test_request_lengths[i] = len(test_req)
 
         
-    for i in range(len(test_request_lengths)):
-        counter = 0
-        for m in radius:
-            dist = Euclidean_distance(test_request_lengths[i],m)
-            if dist > radius[m]:
-                counter += 1
-                if counter == len(radius):
-                    malicious_requests.append(test_request_lengths[i])
+    malicious_requests = get_malicious_requests(test_request_lengths, radius)
 
     if len(malicious_requests) == 0:
         print("No malicious requests detected.")
     else:
         accuracy = 100 - (len(malicious_requests) / len(test_data) * 100)
-        print("Number of test requests: %f" % len(test_data))
-        print("Number of malicious requests detected: %f" % len(malicious_requests))
+        print("Number of test requests: %d" % len(test_data))
+        print("Number of malicious requests detected: %d" % len(malicious_requests))
+        print("Accuracy: %f" % accuracy)
+
+    #test anomalious data
+    print("\n**************************")
+    print("Testing anomalous traffic:")
+    test_data = parser.read_data('../Logfiles/Labeled/anomalousTrafficTest.txt')
+    test_requests = []
+    test_request_lengths = []
+    dist = 0
+    malicious_requests = []
+
+    test_requests = ["" for x in range(len(training_data))]
+    test_request_lengths = np.zeros([len(training_data)])
+    for i in range(len(test_data)):
+        tmp = test_data[i]
+        test_requests[i] = tmp.get('Request', None) #returns None if key doesn't exist
+        test_req = test_requests[i]
+        test_request_lengths[i] = len(test_req)
+
+    malicious_requests = get_malicious_requests(test_request_lengths, radius)
+
+    if len(malicious_requests) == 0:
+        print("No malicious requests detected.")
+    else:
+        accuracy = (len(malicious_requests) / len(test_data) * 100)
+        print("Number of test requests: %d" % len(test_data))
+        print("Number of malicious requests detected: %d" % len(malicious_requests))
         print("Accuracy: %f" % accuracy)
 
     #Plot
