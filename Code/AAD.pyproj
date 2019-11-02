@@ -20,6 +20,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="K_Means.py" />
     <Compile Include="logfileparser.py" />
   </ItemGroup>
   <ItemGroup>
