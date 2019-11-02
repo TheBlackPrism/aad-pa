@@ -7,6 +7,7 @@ import logfileparser as parser
 class K_Means_2(object):
     """description of class"""
 
+def main:
     k = 2
     training_data = parser.read_data('../Logfiles/Labeled/normalTrafficTraining.txt')
 
