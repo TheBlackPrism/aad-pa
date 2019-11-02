@@ -1,6 +1,6 @@
 import re
 import numpy as np
-import K_Means
+from sklearn.cluster import KMeans
 import logfileparser as parser
 
 class NGramm():
@@ -26,7 +26,10 @@ class NGramm():
         total_probability = 0
         for ngramm in ngramms:
             probability_ngramm = self.ngramms_probability.get(ngramm)
+            if probability_ngramm == None:
+                probability_ngramm = 0
             total_probability += probability_ngramm
+
         return total_probability / len(ngramms)
 
 
@@ -38,6 +41,7 @@ class NGramm():
 
         for request in data:
             normalized_requests.append(normalize_request(request['Request']))
+
         for request in normalized_requests:
             for i in range(len(request)):
                 ngramm = request[i:i + self.n] # Split a requests into the n-gramms for the length of n
@@ -53,25 +57,28 @@ class NGramm():
         """
         ngramms = {}
         normalized_request = normalize_request(request['Request'])
-        for i in range(len(request)):
-            ngramm = request[i:i + self.n]
-            if ngramm in self.ngramms:
+
+        for i in range(len(normalized_request)):
+            ngramm = normalized_request[i:i + self.n]
+            if ngramm in ngramms:
                 ngramms[ngramm] += 1
             else:
                 ngramms[ngramm] = 1
+
         return ngramms
     
     def get_feature_vectors(self, data):
         """Get a set of two dimensional feature vectors
         with probability as one axis and the occurences of ngramms as the other axis.
         """
-        vectors = np.zeros([len(data)])
+        vectors = []
         for request in data:
-            print(request)
             ngramms = self.get_ngramms_for_request(request)
             probability = self.get_probability_of_ngrammset(ngramms)
             occurences = sum(ngramms.values())
-            vectors.append([probability, occurence])
+            vectors.append([probability, occurences])
+            
+        return vectors
 
 def normalize_request(request):
     """Normalizes a request by replacing all alphanumeric characters with @
@@ -87,31 +94,38 @@ def main():
     training_data = parser.read_data('../Logfiles/Labeled/normalTrafficTraining.txt')
 
     print("\n**************************")
-    print("Training model:")
+    print("Extracting N-Gramms...")
 
     #fit data
     ng = NGramm()
     ng.fit(training_data)
     
-    print("\n**************************")
+    print("N-Gramms extracted!")
+
+    """print("\n**************************")
     print("All N-Gramms:")
     print(ng.ngramms)
-    
     print("\n**************************")
     print("N-Gramms probabilities:")
     print(ng.ngramms_probability)
-    
     print("\n**************************")
     print("Total N-Gramms:")
     print(ng.total_number_ngramms)
+    """
 
-    
+    print("\n**************************")
+    print("Starting K-Means...")
+
     test_clean = parser.read_data('../Logfiles/Labeled/normalTrafficTest.txt')
     test_anomalous = parser.read_data('../Logfiles/Labeled/anomalousTrafficTest.txt')
 
-    ng.get_feature_vectors(training_data)
+    training_vectors = ng.get_feature_vectors(training_data)
+    test_vectors_clean = ng.get_feature_vectors(test_clean)
+    test_vectors_anomalous = ng.get_feature_vectors(test_anomalous)
 
-    km = K_Means.K_Means()
+    km = KMeans(n_clusters = 3).fit(training_vectors)
+    print(km.predict(test_vectors_clean))
+
 
 if __name__ == "__main__":
     main()

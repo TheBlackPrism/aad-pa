@@ -13,7 +13,7 @@ class K_Means:
         self.k = k
         self.tolerance = tolerance
         self.max_iterations = max_iterations
-        self.centroids = np.zeros([k])
+        self.centroids = {}
     
     def fit(self, data):
 
@@ -32,7 +32,7 @@ class K_Means:
                 self.classes[j] = []
             
             for features in data:
-                distances = [Euclidean_distance(features, centroid) for centroid in self.centroids]
+                distances = [Euclidean_distance(features, centroid) for centroid in self.centroids.values()]
                 classification = distances.index(min(distances))
                 self.classes[classification].append(features)
         
@@ -40,7 +40,8 @@ class K_Means:
             previous = self.centroids
 
             for i in range(len(self.classes)):
-                self.centroids[classification] = np.average(self.classes[classification], axis = 0)
+                for j in len(self.centroids[i]):
+                    self.centroids[classification].append(np.average(self.classes[classification], axis = j))
             
             #check if clusters are optimal
             isOptimal = True
@@ -77,7 +78,6 @@ def Euclidean_distance(p,q):
         distance = abs(p - q)
     else:
         squared_distance = 0
-
         if len(p) == len(q):
             return 0
     
