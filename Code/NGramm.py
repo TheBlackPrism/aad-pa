@@ -25,9 +25,7 @@ class NGramm():
         """
         total_probability = 0
         for ngramm in ngramms:
-            probability_ngramm = self.ngramms_probability.get(ngramm)
-            if probability_ngramm == None:
-                probability_ngramm = 0
+            probability_ngramm = self.ngramms_probability.get(ngramm, 0)
             total_probability += probability_ngramm
 
         return total_probability / len(ngramms)
