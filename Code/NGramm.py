@@ -1,6 +1,6 @@
 import re
 import numpy as np
-from sklearn.cluster import KMeans
+from sklearn.neighbors import LocalOutlierFactor
 import logfileparser as parser
 
 class NGramm():
@@ -121,8 +121,12 @@ def main():
     test_vectors_clean = ng.get_feature_vectors(test_clean)
     test_vectors_anomalous = ng.get_feature_vectors(test_anomalous)
 
-    km = KMeans(n_clusters = 3).fit(training_vectors)
-    print(km.predict(test_vectors_clean))
+    km = LocalOutlierFactor(novelty = True).fit(training_vectors)
+
+    # predict returns 1 for inlier and -1 for outlier
+    result_clean = km.predict(test_vectors_clean)
+    result_anomalous = km.predict(test_vectors_anomalous)
+    print(result_anomalous)
 
 
 if __name__ == "__main__":
