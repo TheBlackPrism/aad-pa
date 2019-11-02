@@ -17,8 +17,13 @@ class NGramm():
         for ngramm in self.ngramms:
             self.ngramms_probability[ngramm] = float(self.ngramms[ngramm]) / self.total_ngramms
 
-    def get_probability(self, data):
-        request
+    def get_probability_of_request(self, data):
+        ngramms = get_ngramms_for_request(data)
+        total_probability = 0
+        for ngramm in ngramms:
+            probability_ngramm = self.ngramms_probability.get(ngramm)
+            total_probability += probability_ngramm
+        return total_probability / len(ngramms)
 
     def get_ngramms(self, data):
         ngramms = {}
