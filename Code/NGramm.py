@@ -1,4 +1,5 @@
 import re
+import K_Means
 import logfileparser as parser
 
 class NGramm():
@@ -6,16 +7,15 @@ class NGramm():
     def __init__(self, n=2):
         self.n = n
         self.ngramms = {}
-        self.total_ngramms = 0
+        self.total_number_ngramms = 0
         self.ngramms_probability = {}
 
     def fit(self, data):
-
-        self.get_ngramms = get_ngramms(data)
-        self.total_ngramms = sum(self.ngramms.values())
+        self.ngramms = self.get_ngramms_for_all(data)
+        self.total_number_ngramms = sum(self.ngramms.values())
 
         for ngramm in self.ngramms:
-            self.ngramms_probability[ngramm] = float(self.ngramms[ngramm]) / self.total_ngramms
+            self.ngramms_probability[ngramm] = float(self.ngramms[ngramm]) / self.total_number_ngramms
 
     def get_probability_of_request(self, data):
         ngramms = get_ngramms_for_request(data)
@@ -25,17 +25,16 @@ class NGramm():
             total_probability += probability_ngramm
         return total_probability / len(ngramms)
 
-    def get_ngramms(self, data):
+    def get_ngramms_for_all(self, data):
         ngramms = {}
         normalized_requests = []
 
         for request in data:
             normalized_requests.append(normalize_request(request['Request']))
-
         for request in normalized_requests:
             for i in range(len(request)):
-                ngramm = request[i:i + self.n]
-                if ngramm in self.ngramms:
+                ngramm = request[i:i + self.n] # Split a requests into the n-gramms for the length of n
+                if ngramm in ngramms:
                     ngramms[ngramm] += 1
                 else:
                     ngramms[ngramm] = 1
@@ -69,11 +68,26 @@ def main():
 
     #fit data
     ng = NGramm()
-    ngramms = ng.fit(training_data)
+    ng.fit(training_data)
+    
+    print("\n**************************")
+    print("All N-Gramms:")
     print(ng.ngramms)
+    
+    print("\n**************************")
+    print("N-Gramms probabilities:")
     print(ng.ngramms_probability)
-    print(ng.total_ngramms)
+    
+    print("\n**************************")
+    print("Total N-Gramms:")
+    print(ng.total_number_ngramms)
 
+    
+    test_clean = parser.read_data('../Logfiles/Labeled/normalTrafficTest.txt')
+    test_anomalous = parser.read_data('../Logfiles/Labeled/anomalousTrafficTest.txt')
+
+    km = K_Means.K_Means()
+    km.fit()
 
 if __name__ == "__main__":
     main()
