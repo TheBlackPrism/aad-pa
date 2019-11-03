@@ -6,8 +6,6 @@ import logfileparser as parser
 
 class K_Means_2(object):
     """description of class"""
-
-def main:
     k = 2
     training_data = parser.read_data('../Logfiles/Labeled/normalTrafficTraining.txt')
 
@@ -25,10 +23,19 @@ def main:
     print("Training model:")
     print("k = %d" %k)
 
+    #fit trainings data to obtain clusters
     kmeans = KMeans(k)
     kmeans.fit(request_lengths)
 
     clusters = kmeans.labels_.tolist()
+
+    for i in range(len(request_lengths)):
+        if cluster[i] == 1:
+            cluster1 = plt.scatter(request_lengths[i], c = 'r', marker = 'x')
+        elif clusters[i] == 0:
+            cluster2 = plt.scatter(request_lengths[i], c = 'g', marker = 'o')
+            
+
 
     plt.plot(clusters)
 
