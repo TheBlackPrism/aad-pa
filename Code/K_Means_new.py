@@ -22,7 +22,6 @@ def main():
     training_data = parser.read_data('../Logfiles/Labeled/normalTrafficTraining.txt')
 
     # Training the N-Gramm extractor
-    ng = NGramm()
     ng.fit(training_data)
     
     print("N-Gramms extracted!")
