@@ -4,7 +4,7 @@ from sklearn.cluster import KMeans
 import logfileparser as parser
 
 
-class K_Means_2(object):
+class K_Means_new(object):
     """description of class"""
     k = 2
     training_data = parser.read_data('../Logfiles/Labeled/normalTrafficTraining.txt')
