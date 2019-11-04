@@ -26,7 +26,7 @@
 # Cookie: JSESSIONID=1F767F17239C9B670A39E9B10C3825F4
 # Connection: close
 # Content-Length: 68
-# Response: id=3&nombre=Vino+Rioja&precio=100&cantidad=55&B1=A%F1adir+al+carrito
+# Parameters: id=3&nombre=Vino+Rioja&precio=100&cantidad=55&B1=A%F1adir+al+carrito
 
 def read_data(url):
     data = []
@@ -52,7 +52,7 @@ def read_data(url):
                     request = []
             else:
                 if wasemptyline and isreadingblock:
-                    request.append("Response: " + line)
+                    request.append("Parameters: " + line)
 
                 elif wasemptyline:
                     isreadingblock = True
