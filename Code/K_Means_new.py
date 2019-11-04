@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.cluster import KMeans
 import logfileparser as parser
-import NGramm as ng
+from NGramm import *
 
 
 class K_Means_new():
@@ -21,6 +21,7 @@ def main():
     test_anomalous = parser.read_data('../Logfiles/Labeled/anomalousTrafficTest.txt')
 
     # Training the N-Gramm extractor
+    ng = NGramm()
     ng.fit(training_data)
     
     
@@ -38,18 +39,13 @@ def main():
 
     print("\n**************************")
     print("Training model:")
-    print("k = %d" %k)
+    print("k = 2")
+    #print("k = %d" %self.k)
 
     #fit trainings data to obtain clusters
-    kmeans = KMeans(k)
+    kmeans = KMeans(2)
     clusters = kmeans.fit(training_vectors)
 
-
-    for i in range(len(clusters)):
-        if cluster[i] == 1:
-            cluster1 = plt.scatter(request_lengths[i], c = 'r', marker = 'x')
-        elif clusters[i] == 0:
-            cluster2 = plt.scatter(request_lengths[i], c = 'g', marker = 'o')
             
 
     #test clean data
