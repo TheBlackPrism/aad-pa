@@ -5,7 +5,7 @@ import logfileparser as parser
 import NGramm as ng
 
 
-class K_Means_new(object):
+class K_Means_new():
     """description of class"""
 
     def __init__(self, k=3, tolerance=0.0001, max_iterations=500):
@@ -19,10 +19,10 @@ def main():
     training_data = parser.read_data('../Logfiles/Labeled/normalTrafficTraining.txt')
     test_clean = parser.read_data('../Logfiles/Labeled/normalTrafficTest.txt')
     test_anomalous = parser.read_data('../Logfiles/Labeled/anomalousTrafficTest.txt')
-    training_data = parser.read_data('../Logfiles/Labeled/normalTrafficTraining.txt')
 
     # Training the N-Gramm extractor
     ng.fit(training_data)
+    
     
     print("N-Gramms extracted!")
     print("**************************")
