@@ -21,7 +21,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="K_Means.py" />
+    <Compile Include="K_Means_new.py" />
     <Compile Include="logfileparser.py" />
+    <Compile Include="NGramm.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="environment.yml" />
