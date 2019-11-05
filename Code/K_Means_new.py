@@ -37,36 +37,38 @@ def main():
     test_vectors_clean = ng.get_feature_vectors(test_clean)
     test_vectors_anomalous = ng.get_feature_vectors(test_anomalous)
 
-    print("\n**************************")
-    print("Training model:")
-    print("k = 2")
-    #print("k = %d" %self.k)
+    for i in range(1,10):
 
-    #fit trainings data to obtain clusters
-    kmeans = KMeans(2)
-    clusters = kmeans.fit(training_vectors)
+        print("\n**************************")
+        print("Training model:")
+        print("k = %d" % i)
+        #print("k = %d" %self.k)
+
+        #fit trainings data to obtain clusters
+        kmeans = KMeans(i)
+        clusters = kmeans.fit(training_vectors)
 
             
 
-    #test clean data
-    print("Training done! Switch to testing.")
-    print("**************************")
-    print("Testing normal traffic:")
+        #test clean data
+        print("Training done! Switch to testing.")
+        print("**************************")
+        print("Testing normal traffic:")
   
-    result_clean = kmeans.predict(test_vectors_clean)
-    result_anomalous = kmeans.predict(test_vectors_anomalous)
+        result_clean = kmeans.predict(test_vectors_clean)
+        result_anomalous = kmeans.predict(test_vectors_anomalous)
 
-    print("Predicting successful!")    
-    print("**************************")
-    print("Results:")
+        print("Predicting successful!")    
+        print("**************************")
+        print("Results:")
 
-    # Evaluation
-    accuracy_anomalous = np.count_nonzero(result_anomalous == -1) / len(result_anomalous) * 100
-    accuracy_clean = np.count_nonzero(result_clean == 1) / len(result_clean) * 100
+        # Evaluation
+        accuracy_anomalous = np.count_nonzero(result_anomalous == -1) / len(result_anomalous) * 100
+        accuracy_clean = np.count_nonzero(result_clean == 1) / len(result_clean) * 100
 
-    print("True Positiv: %d %%" % accuracy_anomalous)
-    print("False Positiv: %d %%" % (100 - accuracy_clean))
-    print("Accuracy: %d %%" % ((accuracy_anomalous * len(result_anomalous) + accuracy_clean * len(result_clean)) / (len(result_clean) + len(result_anomalous))))
+        print("True Positiv: %d %%" % accuracy_anomalous)
+        print("False Positiv: %d %%" % (100 - accuracy_clean))
+        print("Accuracy: %d %%" % ((accuracy_anomalous * len(result_anomalous) + accuracy_clean * len(result_clean)) / (len(result_clean) + len(result_anomalous))))
     
     # Plotting Vectors
     fig, ax = plt.subplots()
