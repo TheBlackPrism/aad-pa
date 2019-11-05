@@ -37,7 +37,7 @@ def main():
     test_vectors_clean = ng.get_feature_vectors(test_clean)
     test_vectors_anomalous = ng.get_feature_vectors(test_anomalous)
 
-    for i in range(1,10):
+    for i in range(1,21):
 
         print("\n**************************")
         print("Training model:")
