@@ -1,9 +1,9 @@
 import re
 import numpy as np
-from sklearn.neighbors import LocalOutlierFactor
 import matplotlib as matplot
 import matplotlib.pyplot as plt
 import logfileparser as parser
+import outlier
 
 class NGram():
 
@@ -106,44 +106,21 @@ def main():
     ng.fit(training_data)
     
     print("N-Grams extracted!")
-    print("**************************")
-    print("Starting Local Outlier Fitting...")
-
 
     # Getting Feature Vectors
     training_vectors = ng.get_feature_vectors(training_data)
     test_vectors_clean = ng.get_feature_vectors(test_clean)
     test_vectors_anomalous = ng.get_feature_vectors(test_anomalous)
-
-    # Fitting model for novel predictions
-    km = LocalOutlierFactor(novelty = True).fit(training_vectors)
     
-    print("Fitting successful!")    
-    print("**************************")
-    print("Starting Prediction...")
+    outlier.local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous)
+    outlier.one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous)
 
-    # Predict returns 1 for inlier and -1 for outlier
-    result_clean = km.predict(test_vectors_clean)
-    result_anomalous = km.predict(test_vectors_anomalous)
-    
-    print("Predicting successful!")    
-    print("**************************")
-    print("Results:")
-
-    # Evaluation
-    accuracy_anomalous = (float (np.count_nonzero(result_anomalous == -1))) / len(result_anomalous) * 100
-    accuracy_clean = (float (np.count_nonzero(result_clean == 1))) / len(result_clean) * 100
-
-    print("True Positive: %.2f %%" % accuracy_anomalous)
-    print("False Positive: %.2f %%" % (100 - accuracy_clean))
-    print("Accuracy: %.2f %%" % ((accuracy_anomalous * len(result_anomalous) + accuracy_clean * len(result_clean)) / (len(result_clean) + len(result_anomalous))))
-    
     # Plotting Vectors
     fig, ax = plt.subplots()
-    samples = 300
-    ax.scatter(training_vectors[:samples,0], training_vectors[:samples,1], s=200,color = "g", alpha = 0.5, label = "Trainings Data")
-    ax.scatter(test_vectors_clean[:samples,0], test_vectors_clean[:samples,1], s=150, color = "b", alpha = 0.5, label = "Clean Data")
-    ax.scatter(test_vectors_anomalous[:samples,0], test_vectors_anomalous[:samples,1], s=100, color = "r", alpha = 0.5, label = "Anomalous Data")
+    samples = 3000
+    ax.scatter(training_vectors[:samples,0], training_vectors[:samples,1], s=200,color = "g", alpha = 0.3, label = "Trainings Data")
+    ax.scatter(test_vectors_clean[:samples,0], test_vectors_clean[:samples,1], s=150, color = "b", alpha = 0.3, label = "Clean Data")
+    ax.scatter(test_vectors_anomalous[:samples,0], test_vectors_anomalous[:samples,1], s=100, color = "r", alpha = 0.3, label = "Anomalous Data")
     plt.xlabel("Probability of the Request")
     plt.ylabel("Number of N-Grams Occurences")
     plt.title("Distribution of Feature Vectors")

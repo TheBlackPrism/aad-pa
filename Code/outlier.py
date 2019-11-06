@@ -1,0 +1,57 @@
+from sklearn.neighbors import LocalOutlierFactor
+from sklearn.svm import OneClassSVM
+import numpy as np
+
+def local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous):
+    """Predicting outliers using Local Outlier Detection
+    """
+    print("**************************")
+    print("Starting Local Outlier Fitting...")
+
+    # Fitting model for novel predictions
+    km = LocalOutlierFactor(novelty = True, contamination = "auto").fit(training_vectors)
+    
+    print("Fitting successful!")    
+    print("**************************")
+    print("Starting Prediction...")
+
+    # Predict returns 1 for inlier and -1 for outlier
+    result_clean = km.predict(test_vectors_clean)
+    result_anomalous = km.predict(test_vectors_anomalous)
+    
+    print("Predicting successful!")    
+    print("**************************")
+    evaluate_detection(result_clean, result_anomalous)
+
+def one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous):
+    """Predicting Outlier using a one Class SVM
+    """
+    print("**************************")
+    print("Starting One Class SVM...")
+
+    # Fitting model for novel predictions
+    svm = OneClassSVM(gamma = "scale").fit(training_vectors)
+    
+    print("Fitting successful!")    
+    print("**************************")
+    print("Starting Prediction...")
+
+    # Predict returns 1 for inlier and -1 for outlier
+    result_clean = svm.predict(test_vectors_clean)
+    result_anomalous = svm.predict(test_vectors_anomalous)
+    
+    print("Predicting successful!")    
+    print("**************************")
+    evaluate_detection(result_clean, result_anomalous)
+
+
+def evaluate_detection(result_clean, result_anomalous):
+    """Evaluates the detection rate of a model and prints it
+    """
+    accuracy_anomalous = (float(np.count_nonzero(result_anomalous == -1))) / len(result_anomalous) * 100
+    accuracy_clean = (float(np.count_nonzero(result_clean == 1))) / len(result_clean) * 100
+    
+    print("Results:")
+    print("True Positive: %.2f %%" % accuracy_anomalous)
+    print("False Positive: %.2f %%" % (100 - accuracy_clean))
+    print("Accuracy: %.2f %%" % ((accuracy_anomalous * len(result_anomalous) + accuracy_clean * len(result_clean)) / (len(result_clean) + len(result_anomalous))))
