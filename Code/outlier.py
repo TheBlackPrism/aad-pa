@@ -1,6 +1,11 @@
 from sklearn.neighbors import LocalOutlierFactor
 from sklearn.svm import OneClassSVM
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import colors
+
+anomalous = "Anomalous"
+clean = "Clean"
 
 def local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous):
     """Predicting outliers using Local Outlier Detection
@@ -14,7 +19,6 @@ def local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_a
     print("Fitting successful!")    
     print("**************************")
     print("Starting Prediction...")
-
     # Predict returns 1 for inlier and -1 for outlier
     result_clean = km.predict(test_vectors_clean)
     result_anomalous = km.predict(test_vectors_anomalous)
@@ -22,6 +26,7 @@ def local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_a
     print("Predicting successful!")    
     print("**************************")
     evaluate_detection(result_clean, result_anomalous)
+    plot_clustering(split_anomalous_clean(test_vectors_anomalous, result_anomalous))
 
 def one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous):
     """Predicting Outlier using a one Class SVM
@@ -43,7 +48,38 @@ def one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous):
     print("Predicting successful!")    
     print("**************************")
     evaluate_detection(result_clean, result_anomalous)
+    plot_clustering(split_anomalous_clean(test_vectors_anomalous, result_anomalous))
 
+def split_anomalous_clean(test_vectors, result):
+    """Splits anomalous and clean identified logs into various dictionaries
+    """
+    dict = {}
+    list_clean = []
+    list_anomalous = []
+    
+    for i in range(len(test_vectors)):
+        if result[i] == 1:
+            list_clean.append(test_vectors[i])
+        else:
+            list_anomalous.append(test_vectors[i])
+    dict[clean] = np.asarray(list_clean)
+    dict[anomalous] = np.asarray(list_anomalous)
+    return dict
+
+def plot_clustering(vectors_dict):
+    """Plots a dictionary of clean and anomalous vectors
+    """
+    fig, ax = plt.subplots()
+    anomalous_vectors = vectors_dict[anomalous]
+    clean_vectors = vectors_dict[clean]
+
+    ax.scatter(anomalous_vectors[:,0], anomalous_vectors[:,1], s=50, color = "r", alpha = 0.3, label = "Anomalous Datapoints")
+    ax.scatter(clean_vectors[:,0], clean_vectors[:,1], s=50, color = "g", alpha = 0.3, label = "Clean Datapoints")
+    plt.xlabel("Probability of the Request")
+    plt.ylabel("Number of N-Grams Occurences")
+    plt.title("Clean and Anomalous Identified Datapoints")
+    ax.legend()
+    plt.show()
 
 def evaluate_detection(result_clean, result_anomalous):
     """Evaluates the detection rate of a model and prints it

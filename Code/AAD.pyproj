@@ -25,6 +25,9 @@
     <Compile Include="K_Means.py" />
     <Compile Include="logfileparser.py" />
     <Compile Include="NGram.py" />
+    <Compile Include="outlier.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="environment.yml" />

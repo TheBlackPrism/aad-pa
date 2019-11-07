@@ -84,7 +84,7 @@ def normalize_request(request):
     """Normalizes a request by replacing all alphanumeric characters with @
     and removes all newline characters
     """
-    regex = re.compile(r"[a-zA-Z0-9]+")
+    regex = re.compile(r"[a-zA-Z0-9]")
     replaced = re.sub(regex, '@',request)
     return replaced
 
@@ -97,7 +97,6 @@ def main():
     training_data = parser.append_parameter_to_request(training_data)
     test_clean = parser.append_parameter_to_request(test_clean)
     test_anomalous = parser.append_parameter_to_request(test_anomalous)
-
     print("**************************")
     print("Extracting N-Grams...")
 
@@ -111,7 +110,7 @@ def main():
     training_vectors = ng.get_feature_vectors(training_data)
     test_vectors_clean = ng.get_feature_vectors(test_clean)
     test_vectors_anomalous = ng.get_feature_vectors(test_anomalous)
-    
+    print(test_vectors_clean)
     outlier.local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous)
     outlier.one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous)
 
