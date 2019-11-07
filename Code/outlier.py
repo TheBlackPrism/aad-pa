@@ -26,7 +26,7 @@ def local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_a
     print("Predicting successful!")    
     print("**************************")
     evaluate_detection(result_clean, result_anomalous)
-    plot_clustering(split_anomalous_clean(test_vectors_anomalous, result_anomalous))
+    plot_clustering(split_anomalous_clean(test_vectors_anomalous, result_anomalous), training_vectors)
 
 def one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous):
     """Predicting Outlier using a one Class SVM
@@ -48,7 +48,7 @@ def one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous):
     print("Predicting successful!")    
     print("**************************")
     evaluate_detection(result_clean, result_anomalous)
-    plot_clustering(split_anomalous_clean(test_vectors_anomalous, result_anomalous))
+    plot_clustering(split_anomalous_clean(test_vectors_anomalous, result_anomalous), training_vectors)
 
 def split_anomalous_clean(test_vectors, result):
     """Splits anomalous and clean identified logs into various dictionaries
@@ -66,15 +66,15 @@ def split_anomalous_clean(test_vectors, result):
     dict[anomalous] = np.asarray(list_anomalous)
     return dict
 
-def plot_clustering(vectors_dict):
+def plot_clustering(vectors_dict, training_vectors):
     """Plots a dictionary of clean and anomalous vectors
     """
     fig, ax = plt.subplots()
     anomalous_vectors = vectors_dict[anomalous]
     clean_vectors = vectors_dict[clean]
-
-    ax.scatter(anomalous_vectors[:,0], anomalous_vectors[:,1], s=50, color = "r", alpha = 0.3, label = "Anomalous Datapoints")
-    ax.scatter(clean_vectors[:,0], clean_vectors[:,1], s=50, color = "g", alpha = 0.3, label = "Clean Datapoints")
+    ax.scatter(training_vectors[:,0], training_vectors[:,1], s=100, color = "c", alpha = 0.5, label = "Training Datapoints")
+    ax.scatter(anomalous_vectors[:,0], anomalous_vectors[:,1], s=20, color = "r", alpha = 0.5, label = "Anomalous Identified Datapoints")
+    ax.scatter(clean_vectors[:,0], clean_vectors[:,1], s=20, color = "g", alpha = 0.5, label = "Clean Identified Datapoints")
     plt.xlabel("Probability of the Request")
     plt.ylabel("Number of N-Grams Occurences")
     plt.title("Clean and Anomalous Identified Datapoints")
