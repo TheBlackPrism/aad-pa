@@ -51,7 +51,7 @@ def one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous):
     plot_clustering(split_anomalous_clean(test_vectors_anomalous, result_anomalous), training_vectors)
 
 def split_anomalous_clean(test_vectors, result):
-    """Splits anomalous and clean identified logs into various dictionaries
+    """Splits anomalous and clean identified logs into the according dictionaries
     """
     dict = {}
     list_clean = []
@@ -67,7 +67,7 @@ def split_anomalous_clean(test_vectors, result):
     return dict
 
 def plot_clustering(vectors_dict, training_vectors):
-    """Plots a dictionary of clean and anomalous vectors
+    """Plots a dictionary of clean and anomalous identified vectors over the training vector
     """
     fig, ax = plt.subplots()
     anomalous_vectors = vectors_dict[anomalous]
