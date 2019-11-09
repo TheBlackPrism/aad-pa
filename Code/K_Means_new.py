@@ -67,7 +67,7 @@ print("False Positiv: %d %%" % (100 - accuracy_clean))
 print("Accuracy: %d %%" % ((accuracy_anomalous * len(result_anomalous) + accuracy_clean * len(result_clean)) / (len(result_clean) + len(result_anomalous))))
     
 # Plotting Vectors
-fig, ax = plt.subplots()
+fig, ax = plt.subplot(2,1,1)
 samples = 300
 ax.scatter(training_vectors[:samples,0], training_vectors[:samples,1], s=200,color = "g", alpha = 0.5, label = "Trainings Data")
 ax.scatter(test_vectors_clean[:samples,0], test_vectors_clean[:samples,1], s=150, color = "b", alpha = 0.5, label = "Clean Data")
@@ -76,10 +76,12 @@ plt.xlabel("Probability of the Request")
 plt.ylabel("Number of N-Gramms Occurences")
 plt.title("Distribution of Feature Vectors")
 ax.legend()
-plt.show()
+plt.grid()
+#plt.show()
 
 """Visualize clusters
 """
+plt.subplot(2,1,2)
 plt. scatter(
     training_vectors[clusters==0,0], training_vectors[clusters==0,1],
     s = 50, c = 'green',
@@ -111,5 +113,8 @@ plt.scatter(
     )
 
 plt.legend(scatterpoints=1)
+plt.xlabel("Probability of the Request")
+plt.ylabel("Number of N-Gramms Occurences")
+plt.title("Visualisation of clusters")
 plt.grid()
 plt.show()
