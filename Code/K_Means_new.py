@@ -14,7 +14,6 @@ test_anomalous = parser.read_data('../Logfiles/Labeled/anomalousTrafficTest.txt'
 # Training the N-Gramm extractor
 ng = NGram()
 ng.fit(training_data)
-print(ng)
     
 print("N-Gramms extracted!")
 print("**************************")
@@ -26,6 +25,7 @@ print("Starting K-Means Fitting...")
 # Getting Feature Vectors
 training_vectors = ng.get_feature_vectors(training_data)
 test_vectors_clean = ng.get_feature_vectors(test_clean)
+print(test_vectors_clean)
 test_vectors_anomalous = ng.get_feature_vectors(test_anomalous)
 
 #for i in range(1,21):
@@ -34,13 +34,16 @@ print("\n**************************")
 print("Training model:")
 print("k = 3")
 
-"""Initialize K-Means and fit training data to obtain clusters
+"""Initialize K-Means, fit training data and predict which cluster it belongs to
 """
 kmeans = KMeans(n_clusters = 3, init='random', 
                 n_init=10, max_iter=300, 
                 tol=1e-04, random_state=0
                 )
 clusters = kmeans.fit_predict(training_vectors)
+print("Debugging: Clusters")
+print(clusters)
+
 
 
     
@@ -50,9 +53,13 @@ clusters = kmeans.fit_predict(training_vectors)
 print("Training done! Switch to testing.")
 print("**************************")
 print("Testing normal traffic:")
-  
+
+"""To see if the test data belongs to one of the obtained clusters we predict
+which is the closest cluster it belongs to
+"""
 result_clean = kmeans.predict(test_vectors_clean)
 result_anomalous = kmeans.predict(test_vectors_anomalous)
+
 
 print("Predicting successful!")    
 print("**************************")
