@@ -2,17 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.cluster import KMeans
 import logfileparser as parser
-from NGramm import *
+from NGram import *
 
-
-class K_Means_new():
-    """description of class"""
-
-    def __init__(self, k=3, tolerance=0.0001, max_iterations=500):
-        self.k = k
-        self.tolerance = tolerance
-        self.max_iterations = max_iterations
-        self.centroids = {}
 
 def main():
     # Reading Data
@@ -23,7 +14,7 @@ def main():
     # Training the N-Gramm extractor
     ng = NGramm()
     ng.fit(training_data)
-    
+    print(ng)
     
     print("N-Gramms extracted!")
     print("**************************")
@@ -37,38 +28,77 @@ def main():
     test_vectors_clean = ng.get_feature_vectors(test_clean)
     test_vectors_anomalous = ng.get_feature_vectors(test_anomalous)
 
-    for i in range(1,21):
+    #for i in range(1,21):
 
-        print("\n**************************")
-        print("Training model:")
-        print("k = %d" % i)
-        #print("k = %d" %self.k)
+    print("\n**************************")
+    print("Training model:")
+    print("k = ")
 
-        #fit trainings data to obtain clusters
-        kmeans = KMeans(i)
-        clusters = kmeans.fit(training_vectors)
+    """Initialize K-Means and fit training data to obtain clusters
+    """
+    kmeans = KMeans(
+        n_clusters = 3, init='random', 
+        n_init=10, max_iter=300, 
+        tol=1e-04, random_state=0)
+    clusters = kmeans.fit_predict(training_vectors)
+
+    """Visualize clusters
+    """
+    plt. scatter(
+        training_vectors[clusters==0,0], training_vectors[clusters==0,1],
+        s = 50, c = 'green',
+        marker= 's', edgecolor= 'black',
+        label = 'cluster 1')
+
+    plt.scatter(
+        training_vectors[clusters==1,0], training_vectors[clusters == 1,1],
+        s = 50, c ='orange',
+        marker = 'o', edgecolor='black',
+        label = 'cluster2'
+        )
+
+    plt.scatter(
+        training_vectors[clusters == 2,0], training_vectors[clusters==2,1],
+        s = 50, c='blue',
+        marker = 'v', edgecolor='black',
+        label = 'cluster 3'
+        )
+
+    """plot the centroids
+    """
+    plt.scatter(
+        kmeans.cluster_centers_[:,0], kmeans.cluster_centers_[:,1],
+        s = 250, marker = '*',
+        c = 'red', edgecolor='black',
+        label='centroids'
+        )
+
+    plt.legend(scatterpoints=1)
+    plt.grid()
+    plt.show()
+    
 
             
 
-        #test clean data
-        print("Training done! Switch to testing.")
-        print("**************************")
-        print("Testing normal traffic:")
+    #test clean data
+    print("Training done! Switch to testing.")
+    print("**************************")
+    print("Testing normal traffic:")
   
-        result_clean = kmeans.predict(test_vectors_clean)
-        result_anomalous = kmeans.predict(test_vectors_anomalous)
+    result_clean = kmeans.predict(test_vectors_clean)
+    result_anomalous = kmeans.predict(test_vectors_anomalous)
 
-        print("Predicting successful!")    
-        print("**************************")
-        print("Results:")
+    print("Predicting successful!")    
+    print("**************************")
+    print("Results:")
 
-        # Evaluation
-        accuracy_anomalous = np.count_nonzero(result_anomalous == -1) / len(result_anomalous) * 100
-        accuracy_clean = np.count_nonzero(result_clean == 1) / len(result_clean) * 100
+    # Evaluation
+    accuracy_anomalous = np.count_nonzero(result_anomalous == -1) / len(result_anomalous) * 100
+    accuracy_clean = np.count_nonzero(result_clean == 1) / len(result_clean) * 100
 
-        print("True Positiv: %d %%" % accuracy_anomalous)
-        print("False Positiv: %d %%" % (100 - accuracy_clean))
-        print("Accuracy: %d %%" % ((accuracy_anomalous * len(result_anomalous) + accuracy_clean * len(result_clean)) / (len(result_clean) + len(result_anomalous))))
+    print("True Positiv: %d %%" % accuracy_anomalous)
+    print("False Positiv: %d %%" % (100 - accuracy_clean))
+    print("Accuracy: %d %%" % ((accuracy_anomalous * len(result_anomalous) + accuracy_clean * len(result_clean)) / (len(result_clean) + len(result_anomalous))))
     
     # Plotting Vectors
     fig, ax = plt.subplots()
@@ -82,7 +112,7 @@ def main():
     ax.legend()
     plt.show()
 
-if __name__ == "__main__":
+    if __name__ == "__main__":
         main()
 
 
