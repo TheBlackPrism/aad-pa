@@ -41,9 +41,19 @@ kmeans = KMeans(n_clusters = 3, init='random',
                 tol=1e-04, random_state=0
                 )
 clusters = kmeans.fit_predict(training_vectors)
-print("Debugging: Clusters")
-print(clusters)
+centroids = kmeans.cluster_centers_
+labels = kmeans.labels_
+clusters_radii = dict()
 
+"""get radiuses for clusters
+"""
+for cluster in clusters:
+    max_val = 0
+    for i in zip(training_vectors[clusters==cluster,0], training_vectors[clusters == cluster,1]):
+        val =np.linalg.norm(np.subtract(i,centroids[i]))
+        if val > max_val:
+            max_val = val
+    clusters_radii[cluster] = max_val
 
 
     
@@ -57,8 +67,11 @@ print("Testing normal traffic:")
 """To see if the test data belongs to one of the obtained clusters we predict
 which is the closest cluster it belongs to
 """
+
 result_clean = kmeans.predict(test_vectors_clean)
+
 result_anomalous = kmeans.predict(test_vectors_anomalous)
+
 
 
 print("Predicting successful!")    
