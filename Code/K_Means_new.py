@@ -67,15 +67,16 @@ print("False Positiv: %d %%" % (100 - accuracy_clean))
 print("Accuracy: %d %%" % ((accuracy_anomalous * len(result_anomalous) + accuracy_clean * len(result_clean)) / (len(result_clean) + len(result_anomalous))))
     
 # Plotting Vectors
-fig, ax = plt.subplot(2,1,1)
+#fig, ax = plt.subplot(2,1,1)
+plt.subplot(2,1,1)
 samples = 300
-ax.scatter(training_vectors[:samples,0], training_vectors[:samples,1], s=200,color = "g", alpha = 0.5, label = "Trainings Data")
-ax.scatter(test_vectors_clean[:samples,0], test_vectors_clean[:samples,1], s=150, color = "b", alpha = 0.5, label = "Clean Data")
-ax.scatter(test_vectors_anomalous[:samples,0], test_vectors_anomalous[:samples,1], s=100, color = "r", alpha = 0.5, label = "Anomalous Data")
+plt.scatter(training_vectors[:samples,0], training_vectors[:samples,1], s=200,color = "g", alpha = 0.5, label = "Trainings Data")
+plt.scatter(test_vectors_clean[:samples,0], test_vectors_clean[:samples,1], s=150, color = "b", alpha = 0.5, label = "Clean Data")
+plt.scatter(test_vectors_anomalous[:samples,0], test_vectors_anomalous[:samples,1], s=100, color = "r", alpha = 0.5, label = "Anomalous Data")
 plt.xlabel("Probability of the Request")
 plt.ylabel("Number of N-Gramms Occurences")
 plt.title("Distribution of Feature Vectors")
-ax.legend()
+plt.legend()
 plt.grid()
 #plt.show()
 
