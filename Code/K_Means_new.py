@@ -73,8 +73,8 @@ samples = 300
 plt.scatter(training_vectors[:samples,0], training_vectors[:samples,1], s=200,color = "g", alpha = 0.5, label = "Trainings Data")
 plt.scatter(test_vectors_clean[:samples,0], test_vectors_clean[:samples,1], s=150, color = "b", alpha = 0.5, label = "Clean Data")
 plt.scatter(test_vectors_anomalous[:samples,0], test_vectors_anomalous[:samples,1], s=100, color = "r", alpha = 0.5, label = "Anomalous Data")
-plt.xlabel("Probability of the Request")
-plt.ylabel("Number of N-Gramms Occurences")
+plt.xlim(0.02,0.1)
+plt.ylim(0, 500)
 plt.title("Distribution of Feature Vectors")
 plt.legend()
 plt.grid()
@@ -113,6 +113,8 @@ plt.scatter(
     label='centroids'
     )
 
+plt.xlim(0.02,0.1)
+plt.ylim(0, 500)
 plt.legend(scatterpoints=1)
 plt.xlabel("Probability of the Request")
 plt.ylabel("Number of N-Gramms Occurences")
