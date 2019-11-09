@@ -5,118 +5,109 @@ import logfileparser as parser
 from NGram import *
 
 
-def main():
-    # Reading Data
-    training_data = parser.read_data('../Logfiles/Labeled/normalTrafficTraining.txt')
-    test_clean = parser.read_data('../Logfiles/Labeled/normalTrafficTest.txt')
-    test_anomalous = parser.read_data('../Logfiles/Labeled/anomalousTrafficTest.txt')
+#def main():
+# Reading Data
+training_data = parser.read_data('../Logfiles/Labeled/normalTrafficTraining.txt')
+test_clean = parser.read_data('../Logfiles/Labeled/normalTrafficTest.txt')
+test_anomalous = parser.read_data('../Logfiles/Labeled/anomalousTrafficTest.txt')
 
-    # Training the N-Gramm extractor
-    ng = NGramm()
-    ng.fit(training_data)
-    print(ng)
+# Training the N-Gramm extractor
+ng = NGram()
+ng.fit(training_data)
+print(ng)
     
-    print("N-Gramms extracted!")
-    print("**************************")
-    print("Starting K-Means Fitting...")
+print("N-Gramms extracted!")
+print("**************************")
+print("Starting K-Means Fitting...")
 
 
 
 
-    # Getting Feature Vectors
-    training_vectors = ng.get_feature_vectors(training_data)
-    test_vectors_clean = ng.get_feature_vectors(test_clean)
-    test_vectors_anomalous = ng.get_feature_vectors(test_anomalous)
+# Getting Feature Vectors
+training_vectors = ng.get_feature_vectors(training_data)
+test_vectors_clean = ng.get_feature_vectors(test_clean)
+test_vectors_anomalous = ng.get_feature_vectors(test_anomalous)
 
-    #for i in range(1,21):
+#for i in range(1,21):
 
-    print("\n**************************")
-    print("Training model:")
-    print("k = ")
+print("\n**************************")
+print("Training model:")
+print("k = 3")
 
-    """Initialize K-Means and fit training data to obtain clusters
-    """
-    kmeans = KMeans(
-        n_clusters = 3, init='random', 
-        n_init=10, max_iter=300, 
-        tol=1e-04, random_state=0)
-    clusters = kmeans.fit_predict(training_vectors)
+"""Initialize K-Means and fit training data to obtain clusters
+"""
+kmeans = KMeans(n_clusters = 3, init='random', 
+                n_init=10, max_iter=300, 
+                tol=1e-04, random_state=0
+                )
+clusters = kmeans.fit_predict(training_vectors)
 
-    """Visualize clusters
-    """
-    plt. scatter(
-        training_vectors[clusters==0,0], training_vectors[clusters==0,1],
-        s = 50, c = 'green',
-        marker= 's', edgecolor= 'black',
-        label = 'cluster 1')
+"""Visualize clusters
+"""
+plt. scatter(
+    training_vectors[clusters==0,0], training_vectors[clusters==0,1],
+    s = 50, c = 'green',
+    marker= 's', edgecolor= 'black',
+    label = 'cluster 1'
+    )
 
-    plt.scatter(
-        training_vectors[clusters==1,0], training_vectors[clusters == 1,1],
-        s = 50, c ='orange',
-        marker = 'o', edgecolor='black',
-        label = 'cluster2'
-        )
+plt.scatter(
+    training_vectors[clusters==1,0], training_vectors[clusters == 1,1],
+    s = 50, c ='orange',
+    marker = 'o', edgecolor='black',
+    label = 'cluster2'
+    )
 
-    plt.scatter(
-        training_vectors[clusters == 2,0], training_vectors[clusters==2,1],
-        s = 50, c='blue',
-        marker = 'v', edgecolor='black',
-        label = 'cluster 3'
-        )
+plt.scatter(
+    training_vectors[clusters == 2,0], training_vectors[clusters==2,1],
+    s = 50, c='blue',
+    marker = 'v', edgecolor='black',
+    label = 'cluster 3'
+    )
 
-    """plot the centroids
-    """
-    plt.scatter(
-        kmeans.cluster_centers_[:,0], kmeans.cluster_centers_[:,1],
-        s = 250, marker = '*',
-        c = 'red', edgecolor='black',
-        label='centroids'
-        )
+"""plot the centroids
+"""
+plt.scatter(
+    kmeans.cluster_centers_[:,0], kmeans.cluster_centers_[:,1],
+    s = 250, marker = '*',
+    c = 'red', edgecolor='black',
+    label='centroids'
+    )
 
-    plt.legend(scatterpoints=1)
-    plt.grid()
-    plt.show()
+plt.legend(scatterpoints=1)
+plt.grid()
+plt.show()
     
 
             
-
-    #test clean data
-    print("Training done! Switch to testing.")
-    print("**************************")
-    print("Testing normal traffic:")
+#test clean data
+print("Training done! Switch to testing.")
+print("**************************")
+print("Testing normal traffic:")
   
-    result_clean = kmeans.predict(test_vectors_clean)
-    result_anomalous = kmeans.predict(test_vectors_anomalous)
+result_clean = kmeans.predict(test_vectors_clean)
+result_anomalous = kmeans.predict(test_vectors_anomalous)
 
-    print("Predicting successful!")    
-    print("**************************")
-    print("Results:")
+print("Predicting successful!")    
+print("**************************")
+print("Results:")
 
-    # Evaluation
-    accuracy_anomalous = np.count_nonzero(result_anomalous == -1) / len(result_anomalous) * 100
-    accuracy_clean = np.count_nonzero(result_clean == 1) / len(result_clean) * 100
+# Evaluation
+accuracy_anomalous = np.count_nonzero(result_anomalous == -1) / len(result_anomalous) * 100
+accuracy_clean = np.count_nonzero(result_clean == 1) / len(result_clean) * 100
 
-    print("True Positiv: %d %%" % accuracy_anomalous)
-    print("False Positiv: %d %%" % (100 - accuracy_clean))
-    print("Accuracy: %d %%" % ((accuracy_anomalous * len(result_anomalous) + accuracy_clean * len(result_clean)) / (len(result_clean) + len(result_anomalous))))
+print("True Positiv: %d %%" % accuracy_anomalous)
+print("False Positiv: %d %%" % (100 - accuracy_clean))
+print("Accuracy: %d %%" % ((accuracy_anomalous * len(result_anomalous) + accuracy_clean * len(result_clean)) / (len(result_clean) + len(result_anomalous))))
     
-    # Plotting Vectors
-    fig, ax = plt.subplots()
-    samples = 300
-    ax.scatter(training_vectors[:samples,0], training_vectors[:samples,1], s=200,color = "g", alpha = 0.5, label = "Trainings Data")
-    ax.scatter(test_vectors_clean[:samples,0], test_vectors_clean[:samples,1], s=150, color = "b", alpha = 0.5, label = "Clean Data")
-    ax.scatter(test_vectors_anomalous[:samples,0], test_vectors_anomalous[:samples,1], s=100, color = "r", alpha = 0.5, label = "Anomalous Data")
-    plt.xlabel("Probability of the Request")
-    plt.ylabel("Number of N-Gramms Occurences")
-    plt.title("Distribution of Feature Vectors")
-    ax.legend()
-    plt.show()
-
-    if __name__ == "__main__":
-        main()
-
-
-
-
-
-
+# Plotting Vectors
+fig, ax = plt.subplots()
+samples = 300
+ax.scatter(training_vectors[:samples,0], training_vectors[:samples,1], s=200,color = "g", alpha = 0.5, label = "Trainings Data")
+ax.scatter(test_vectors_clean[:samples,0], test_vectors_clean[:samples,1], s=150, color = "b", alpha = 0.5, label = "Clean Data")
+ax.scatter(test_vectors_anomalous[:samples,0], test_vectors_anomalous[:samples,1], s=100, color = "r", alpha = 0.5, label = "Anomalous Data")
+plt.xlabel("Probability of the Request")
+plt.ylabel("Number of N-Gramms Occurences")
+plt.title("Distribution of Feature Vectors")
+ax.legend()
+plt.show()
