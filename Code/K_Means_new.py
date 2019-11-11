@@ -3,10 +3,9 @@ import numpy as np
 from sklearn.cluster import KMeans
 import logfileparser as parser
 from NGram import *
-from collections import Counter, defaultdict
+#from collections import Counter, defaultdict
 
 
-#def main():
 # Reading Data
 training_data = parser.read_data('../Logfiles/Labeled/normalTrafficTraining.txt')
 test_clean = parser.read_data('../Logfiles/Labeled/normalTrafficTest.txt')
@@ -28,7 +27,6 @@ training_vectors = ng.get_feature_vectors(training_data)
 test_vectors_clean = ng.get_feature_vectors(test_clean)
 test_vectors_anomalous = ng.get_feature_vectors(test_anomalous)
 
-#for i in range(1,21):
 
 print("\n**************************")
 print("Training model:")
@@ -42,10 +40,8 @@ kmeans = KMeans(n_clusters = 3, init='random',
                 )
 clusters = kmeans.fit_predict(training_vectors)
 centroids = kmeans.cluster_centers_
-np.savetxt('centroids.txt',centroids)
 labels = kmeans.labels_
 clusters_radii = dict()
-clusters_datapoints = defaultdict(list)
 
 """sort each datapoint to its corresponding cluster
 """
@@ -61,14 +57,13 @@ for j in range(len(labels)):
         elif(labels[j]== 2.0):
             cluster2.append(training_vectors[j])
 
-print(len(cluster0))
-print(len(cluster1))
-print(len(cluster2))
+
 
         
 
-"""get a dictionary with the cluster index as key and the radiuses for clusters
-as value
+"""get the radius for each cluster.
+In lack of a better method just compute the datapoint farthest away from the centroid and take the
+distance as radius.
 """
 
 centroid = centroids[0]
@@ -94,9 +89,6 @@ for i in range(len(cluster2)):
     if val > max_val:
         max_val = val
 clusters_radii[2] = max_val
-
-print("radii")
-print(clusters_radii) 
 
             
 #test clean data
@@ -163,7 +155,6 @@ print("False Positiv: %.2f %%" % (100 - accuracy_clean))
 print("Accuracy: %.2f %%" % ((accuracy_anomalous * len(test_vectors_anomalous) + accuracy_clean * len(test_vectors_clean)) / (len(test_vectors_clean) + len(test_vectors_anomalous))))
     
 # Plotting Vectors
-#fig, ax = plt.subplot(2,1,1)
 plt.subplot(2,1,1)
 samples = 300
 plt.scatter(training_vectors[:samples,0], training_vectors[:samples,1], s=200,color = "g", alpha = 0.5, label = "Trainings Data")
@@ -174,7 +165,7 @@ plt.ylim(0, 500)
 plt.title("Distribution of Feature Vectors")
 plt.legend()
 plt.grid()
-#plt.show()
+
 
 """Visualize clusters
 """
