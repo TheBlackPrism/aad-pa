@@ -110,34 +110,44 @@ if the distance between the centroid and the datapoint is larger than the radius
 
 malicious_query_in_clean_test_vector = [] #would be bad. The vectors should belong to a cluster
 could_be_assigned_clean_test_vector = [] #would be good. The vectors should belong to a cluster
-for cluster in clusters_radii:
-    r = clusters_radii[cluster]
-    c = clusters_datapoints[cluster]
-    
-    for i in range(len(test_vector_clean)):
-        dist = 0
-        dist = c - test_vector_clean[i]
-        if dist > r:
-            malicious_query_in_clean_test_vector.append(test_vector_clean[i])
-        else:
-            could_be_assigned_clean_test_vector.append(test_vector_clean[i])
+
+r0 = clusters_radii[0]
+c0 = centroids[0]
+
+r1 = clusters_radii[1]
+c1 = centroids[1]
+
+r2 = clusters_radii[2]
+c2 = centroids[2]
+
+
+
+for i in range(len(test_vectors_clean)):
+    dist0 = c0 - test_vectors_clean[i]
+    dist1 = c1 - test_vectors_clean[i]
+    dist2 = c2 - test_vectors_clean[i]
+
+    if dist0 <= r0 | dist1 <= r1 | dist2 <= r2:
+        could_be_assigned_clean_test_vector.append(test_vectors_clean[i])
+    else:
+        malicious_query_in_clean_test_vector.append(test_vectors_clean[i])
+
 
 malicious_query_in_anomalous_test_vector = [] #would be good. The vectors shouldn't belong to any cluster
 could_be_assigned_anomalous_test_vector = [] #would be bad. The vectors shouldn't belong to any cluster
-for cluster in clusters_radii:
-    r = clusters_radii[cluster]
-    c = clusters_datapoints
 
-    for i in range(len(test_vectors_anomalous)):
-        dist = 0
-        dist = c - test_vectors_anomalous[i]
-        if dist > r:
-            malicious_query_in_anomalous_test_vector.append(test_vectors_anomalous[i])
-        else:
-            could_be_assigned_anomalous_test_vector.append(test_vectors_anomalous[i])
+dist0 = 0
+dist1 = 0
+dist2 = 0
+for i in range(len(test_vectors_anomalous)):
+    dist0 = c0 - test_vectors_anomalous[i]
+    dist1 = c1 - test_vectors_anomalous[i]
+    dist2 = c2 - test_vectors_anomalous[i]
 
-            
-
+    if dist0 <= r0 | dist1 <= r1 | dist2 <= r2:
+        could_be_assigned_anomalous_test_vector.append(test_vectors_anomalous[i])
+    else:
+        malicious_query_in_anomalous_test_vector.append(test_vectors_anomalous[i]) 
 
 
 print("Predicting successful!")    
