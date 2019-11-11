@@ -158,9 +158,9 @@ print("Results:")
 accuracy_anomalous = len(detected_anomalies_in_anomalous_test_vector ) / len(test_vectors_anomalous) * 100
 accuracy_clean = len(could_be_assigned_clean_test_vector) / len(test_vectors_clean) * 100
 
-print("True Positiv: %d %%" % accuracy_anomalous)
-print("False Positiv: %d %%" % (100 - accuracy_clean))
-print("Accuracy: %d %%" % ((accuracy_anomalous * len(test_vectors_anomalous) + accuracy_clean * len(test_vectors_clean)) / (len(test_vectors_clean) + len(test_vectors_anomalous))))
+print("True Positiv: %.2f %%" % accuracy_anomalous)
+print("False Positiv: %.2f %%" % (100 - accuracy_clean))
+print("Accuracy: %.2f %%" % ((accuracy_anomalous * len(test_vectors_anomalous) + accuracy_clean * len(test_vectors_clean)) / (len(test_vectors_clean) + len(test_vectors_anomalous))))
     
 # Plotting Vectors
 #fig, ax = plt.subplot(2,1,1)
