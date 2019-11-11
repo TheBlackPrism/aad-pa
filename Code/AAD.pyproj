@@ -12,6 +12,7 @@
     <OutputPath>.</OutputPath>
     <IsWindowsApplication>False</IsWindowsApplication>
     <InterpreterId>Global|ContinuumAnalytics|Anaconda37-64</InterpreterId>
+    <ProjectGuid>{c2366d58-3741-4a60-a089-9582d0ec42e2}</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -23,6 +24,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="K_Means.py" />
+    <Compile Include="K_Means_new.py" />
     <Compile Include="logfileparser.py" />
     <Compile Include="NGram.py" />
     <Compile Include="outlier.py">
