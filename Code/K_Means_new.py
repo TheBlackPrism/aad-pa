@@ -83,7 +83,7 @@ centroid = centroids[1]
 max_val = 0
 for i in range(len(cluster1)):
     val = np.linalg.norm(centroid-cluster1[i])
-    if val > maxmax_val:
+    if val > max_val:
         max_val = val
 clusters_radii[1] = max_val
 
@@ -96,21 +96,7 @@ for i in range(len(cluster2)):
 clusters_radii[2] = max_val
 
 print("radii")
-print(clusters_radii)
-    
-
-for cluster in cluster_centroids:
-    max_val = 0
-    for i in zip(training_vectors[clusters==cluster,0], training_vectors[clusters == cluster,1]):
-        c = cluster_centroids[cluster]
-        #for i in range
-        val =np.linalg.norm(np.subtract(i,c))
-        if val > max_val:
-            max_val = val
-    clusters_radii[cluster] = max_val
-
-
-    
+print(clusters_radii) 
 
             
 #test clean data
