@@ -108,7 +108,7 @@ print("Testing normal traffic:")
 if the distance between the centroid and the datapoint is larger than the radius for said cluster.
 """
 
-malicious_query_in_clean_test_vector = [] #would be bad. The vectors should belong to a cluster
+could_not_be_assigned_clean_test_vector = [] #would be bad. The vectors should belong to a cluster
 could_be_assigned_clean_test_vector = [] #would be good. The vectors should belong to a cluster
 
 r0 = clusters_radii[0]
@@ -130,11 +130,11 @@ for i in range(len(test_vectors_clean)):
     if dist0 <= r0 or dist1 <= r1 or dist2 <= r2:
         could_be_assigned_clean_test_vector.append(test_vectors_clean[i])
     else:
-        malicious_query_in_clean_test_vector.append(test_vectors_clean[i])
+        could_not_be_assigned_clean_test_vector.append(test_vectors_clean[i])
 
 
-malicious_query_in_anomalous_test_vector = [] #would be good. The vectors shouldn't belong to any cluster
-could_be_assigned_anomalous_test_vector = [] #would be bad. The vectors shouldn't belong to any cluster
+detected_anomalies_in_anomalous_test_vector = [] #would be good. The vectors shouldn't belong to any cluster
+undetected_anomalies_in_anomalous_test_vector = [] #would be bad. The vectors shouldn't belong to any cluster
 
 dist0 = 0
 dist1 = 0
@@ -145,9 +145,9 @@ for i in range(len(test_vectors_anomalous)):
     dist2 = np.linalg.norm(c2 - test_vectors_anomalous[i])
 
     if dist0 <= r0 or dist1 <= r1 or dist2 <= r2:
-        could_be_assigned_anomalous_test_vector.append(test_vectors_anomalous[i])
+        undetected_anomalies_in_anomalous_test_vector.append(test_vectors_anomalous[i])
     else:
-        malicious_query_in_anomalous_test_vector.append(test_vectors_anomalous[i]) 
+        detected_anomalies_in_anomalous_test_vector.append(test_vectors_anomalous[i]) 
 
 
 print("Predicting successful!")    
@@ -155,12 +155,12 @@ print("**************************")
 print("Results:")
 
 # Evaluation
-accuracy_anomalous = np.count_nonzero(malicious_query_in_anomalous_test_vector == -1) / len(test_vectors_anomalous) * 100
-accuracy_clean = np.count_nonzero(could_be_assigned_clean_test_vector == 1) / len(test_vectors_clean) * 100
+accuracy_anomalous = len(detected_anomalies_in_anomalous_test_vector ) / len(test_vectors_anomalous) * 100
+accuracy_clean = len(could_be_assigned_clean_test_vector) / len(test_vectors_clean) * 100
 
 print("True Positiv: %d %%" % accuracy_anomalous)
 print("False Positiv: %d %%" % (100 - accuracy_clean))
-print("Accuracy: %d %%" % ((accuracy_anomalous * len(result_anomalous) + accuracy_clean * len(result_clean)) / (len(result_clean) + len(result_anomalous))))
+print("Accuracy: %d %%" % ((accuracy_anomalous * len(test_vectors_anomalous) + accuracy_clean * len(test_vectors_clean)) / (len(test_vectors_clean) + len(test_vectors_anomalous))))
     
 # Plotting Vectors
 #fig, ax = plt.subplot(2,1,1)
