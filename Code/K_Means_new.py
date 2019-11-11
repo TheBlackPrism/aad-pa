@@ -127,7 +127,6 @@ for i in range(len(test_vectors_clean)):
     dist0 = np.linalg.norm(c0-test_vectors_clean[i])
     dist1 = np.linalg.norm(c1-test_vectors_clean[i])
     dist2 = np.linalg.norm(c2-test_vectors_clean[i])
-    print(dist0)
     if dist0 <= r0 or dist1 <= r1 or dist2 <= r2:
         could_be_assigned_clean_test_vector.append(test_vectors_clean[i])
     else:
