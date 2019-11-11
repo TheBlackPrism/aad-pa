@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.cluster import KMeans
 import logfileparser as parser
 from NGram import *
+from collections import Counter, defaultdict
 
 
 #def main():
@@ -25,7 +26,6 @@ print("Starting K-Means Fitting...")
 # Getting Feature Vectors
 training_vectors = ng.get_feature_vectors(training_data)
 test_vectors_clean = ng.get_feature_vectors(test_clean)
-print(test_vectors_clean)
 test_vectors_anomalous = ng.get_feature_vectors(test_anomalous)
 
 #for i in range(1,21):
@@ -42,15 +42,69 @@ kmeans = KMeans(n_clusters = 3, init='random',
                 )
 clusters = kmeans.fit_predict(training_vectors)
 centroids = kmeans.cluster_centers_
+np.savetxt('centroids.txt',centroids)
 labels = kmeans.labels_
 clusters_radii = dict()
+clusters_datapoints = defaultdict(list)
 
-"""get radiuses for clusters
+"""sort each datapoint to its corresponding cluster
 """
-for cluster in clusters:
+
+cluster0 = []
+cluster1 = []
+cluster2 = []
+for j in range(len(labels)):
+        if(labels[j] == 0.0):
+            cluster0.append(training_vectors[j])
+        elif(labels[j] == 1.0):
+            cluster1.append(training_vectors[j])
+        elif(labels[j]== 2.0):
+            cluster2.append(training_vectors[j])
+
+print(len(cluster0))
+print(len(cluster1))
+print(len(cluster2))
+
+        
+
+"""get a dictionary with the cluster index as key and the radiuses for clusters
+as value
+"""
+
+centroid = centroids[0]
+max_val = 0
+for i in range(len(cluster0)):
+   val = np.linalg.norm(centroid-cluster0[i])
+   if val > max_val:
+       max_val = val
+clusters_radii[0] = max_val
+
+centroid = centroids[1]
+max_val = 0
+for i in range(len(cluster1)):
+    val = np.linalg.norm(centroid-cluster1[i])
+    if val > maxmax_val:
+        max_val = val
+clusters_radii[1] = max_val
+
+centroid = centroids[2]
+max_val = 0
+for i in range(len(cluster2)):
+    val = np.linalg.norm(centroid - cluster2[i])
+    if val > max_val:
+        max_val = val
+clusters_radii[2] = max_val
+
+print("radii")
+print(clusters_radii)
+    
+
+for cluster in cluster_centroids:
     max_val = 0
     for i in zip(training_vectors[clusters==cluster,0], training_vectors[clusters == cluster,1]):
-        val =np.linalg.norm(np.subtract(i,centroids[i]))
+        c = cluster_centroids[cluster]
+        #for i in range
+        val =np.linalg.norm(np.subtract(i,c))
         if val > max_val:
             max_val = val
     clusters_radii[cluster] = max_val
@@ -64,13 +118,39 @@ print("Training done! Switch to testing.")
 print("**************************")
 print("Testing normal traffic:")
 
-"""To see if the test data belongs to one of the obtained clusters we predict
-which is the closest cluster it belongs to
+"""To see if the test data belongs to one of the obtained clusters we test,
+if the distance between the centroid and the datapoint is larger than the radius for said cluster.
 """
 
-result_clean = kmeans.predict(test_vectors_clean)
+malicious_query_in_clean_test_vector = [] #would be bad. The vectors should belong to a cluster
+could_be_assigned_clean_test_vector = [] #would be good. The vectors should belong to a cluster
+for cluster in clusters_radii:
+    r = clusters_radii[cluster]
+    c = clusters_datapoints[cluster]
+    
+    for i in range(len(test_vector_clean)):
+        dist = 0
+        dist = c - test_vector_clean[i]
+        if dist > r:
+            malicious_query_in_clean_test_vector.append(test_vector_clean[i])
+        else:
+            could_be_assigned_clean_test_vector.append(test_vector_clean[i])
 
-result_anomalous = kmeans.predict(test_vectors_anomalous)
+malicious_query_in_anomalous_test_vector = [] #would be good. The vectors shouldn't belong to any cluster
+could_be_assigned_anomalous_test_vector = [] #would be bad. The vectors shouldn't belong to any cluster
+for cluster in clusters_radii:
+    r = clusters_radii[cluster]
+    c = clusters_datapoints
+
+    for i in range(len(test_vectors_anomalous)):
+        dist = 0
+        dist = c - test_vectors_anomalous[i]
+        if dist > r:
+            malicious_query_in_anomalous_test_vector.append(test_vectors_anomalous[i])
+        else:
+            could_be_assigned_anomalous_test_vector.append(test_vectors_anomalous[i])
+
+            
 
 
 
@@ -79,8 +159,8 @@ print("**************************")
 print("Results:")
 
 # Evaluation
-accuracy_anomalous = np.count_nonzero(result_anomalous == -1) / len(result_anomalous) * 100
-accuracy_clean = np.count_nonzero(result_clean == 1) / len(result_clean) * 100
+accuracy_anomalous = np.count_nonzero(malicious_query_in_anomalous_test_vector == -1) / len(test_vectors_anomalous) * 100
+accuracy_clean = np.count_nonzero(could_be_assigned_clean_test_vector == 1) / len(test_vectors_clean) * 100
 
 print("True Positiv: %d %%" % accuracy_anomalous)
 print("False Positiv: %d %%" % (100 - accuracy_clean))
