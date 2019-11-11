@@ -123,11 +123,12 @@ c2 = centroids[2]
 
 
 for i in range(len(test_vectors_clean)):
-    dist0 = c0 - test_vectors_clean[i]
-    dist1 = c1 - test_vectors_clean[i]
-    dist2 = c2 - test_vectors_clean[i]
 
-    if dist0 <= r0 | dist1 <= r1 | dist2 <= r2:
+    dist0 = np.linalg.norm(c0-test_vectors_clean[i])
+    dist1 = np.linalg.norm(c1-test_vectors_clean[i])
+    dist2 = np.linalg.norm(c2-test_vectors_clean[i])
+    print(dist0)
+    if dist0 <= r0 or dist1 <= r1 or dist2 <= r2:
         could_be_assigned_clean_test_vector.append(test_vectors_clean[i])
     else:
         malicious_query_in_clean_test_vector.append(test_vectors_clean[i])
@@ -140,11 +141,11 @@ dist0 = 0
 dist1 = 0
 dist2 = 0
 for i in range(len(test_vectors_anomalous)):
-    dist0 = c0 - test_vectors_anomalous[i]
-    dist1 = c1 - test_vectors_anomalous[i]
-    dist2 = c2 - test_vectors_anomalous[i]
+    dist0 = np.linalg.norm(c0 - test_vectors_anomalous[i])
+    dist1 = np.linalg.norm(c1 - test_vectors_anomalous[i])
+    dist2 = np.linalg.norm(c2 - test_vectors_anomalous[i])
 
-    if dist0 <= r0 | dist1 <= r1 | dist2 <= r2:
+    if dist0 <= r0 or dist1 <= r1 or dist2 <= r2:
         could_be_assigned_anomalous_test_vector.append(test_vectors_anomalous[i])
     else:
         malicious_query_in_anomalous_test_vector.append(test_vectors_anomalous[i]) 
