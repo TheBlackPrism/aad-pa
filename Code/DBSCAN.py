@@ -41,14 +41,8 @@ Both parameters must be chosen carefully, depending on the dataset.
 dbscan = DBSCAN(eps = 0.5, min_samples=3).fit(training_vectors)
 labels = dbscan.labels_
 
-#Visualize the clustering
-colours = {}
-colours[0] = 'r'
-colours[1] = 'g'
-colours[2] = 'b'
-colours[-1] = 'k'
+"""Visualisation of clusters depends on the data in the dataset.
 
-for label in labels:
-    colour_vector = [colours[label]]
+"""
 
 
