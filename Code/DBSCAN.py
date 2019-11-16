@@ -28,6 +28,27 @@ test_vectors_anomalous = ng.get_feature_vectors(test_anomalous)
 
 print("\n**************************")
 print("Training model:")
-print("eps = ")
-print("minimum number of samples needed for a cluster: ")
+print("eps = 0.5")
+print("minimum number of samples needed for a cluster: 3")
+
+#Building the clustering model
+#eps is the radius of the cluster
+"""eps is the radius of the cluster.
+min_samples gives the minimum number of samples that must be found within
+eps to form a cluster.
+Both parameters must be chosen carefully, depending on the dataset.
+"""
+dbscan = DBSCAN(eps = 0.5, min_samples=3).fit(training_vectors)
+labels = dbscan.labels_
+
+#Visualize the clustering
+colours = {}
+colours[0] = 'r'
+colours[1] = 'g'
+colours[2] = 'b'
+colours[-1] = 'k'
+
+for label in labels:
+    colour_vector = [colours[label]]
+
 
