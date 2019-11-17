@@ -27,6 +27,7 @@ def local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_a
     print("**************************")
     evaluate_detection(result_clean, result_anomalous)
     plot_clustering(split_anomalous_clean(test_vectors_anomalous, result_anomalous), training_vectors)
+    return result_clean, result_anomalous
 
 def one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous):
     """Predicting Outlier using a one Class SVM
@@ -49,6 +50,7 @@ def one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous):
     print("**************************")
     evaluate_detection(result_clean, result_anomalous)
     plot_clustering(split_anomalous_clean(test_vectors_anomalous, result_anomalous), training_vectors)
+    return result_clean, result_anomalous
 
 def split_anomalous_clean(test_vectors, result):
     """Splits anomalous and clean identified logs into the according dictionaries
@@ -58,7 +60,7 @@ def split_anomalous_clean(test_vectors, result):
     list_anomalous = []
     
     for i in range(len(test_vectors)):
-        if result[i] == 1:
+        if result[i] == 1:  
             list_clean.append(test_vectors[i])
         else:
             list_anomalous.append(test_vectors[i])

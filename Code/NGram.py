@@ -156,8 +156,27 @@ def main():
     test_vectors_clean = ng.get_feature_vectors_multidimensional(test_clean)
     test_vectors_anomalous = ng.get_feature_vectors_multidimensional(test_anomalous)
 
-    outlier.local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous)
-    outlier.one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous)
+    result_clean, result_anomalous = outlier.local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous)
+    #outlier.one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous)
+
+    # Write Results to file
+    f = open("NGram_Result.txt", "x")
+
+    f.write("*************************\nClean Data:")
+    for i in range(len(test_clean)):
+        request = test_clean[i]
+        f.write("\nRequest:\n " + request["Request"])
+        f.write("\nFeature Vector:\n " + np.array2string(test_vectors_clean[i]))
+        f.write("\nResult:\n " + np.array2string(result_clean[i]))
+    
+    f.write("\n\n\n\n*************************\nAnomalous Data:")
+    for i in range(len(test_anomalous)):
+        request = test_anomalous[i]
+        f.write("\nRequest:\n " + request["Request"])
+        f.write("\nFeature Vector:\n " + np.array2string(test_vectors_anomalous[i]))
+        f.write("\nResult:\n " + np.array2string(result_anomalous[i]))
+
+    f.close()
 
     # Plotting Vectors
     """
