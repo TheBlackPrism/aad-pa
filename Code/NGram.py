@@ -58,7 +58,7 @@ class NGram():
         ngrams = {}
         normalized_request = normalize_request(request['Request'])
 
-        for i in range(len(normalized_request)):
+        for i in range(len(normalized_request) - self.n):
             ngram = normalized_request[i:i + self.n]
             if ngram in ngrams:
                 ngrams[ngram] += 1
@@ -91,12 +91,15 @@ class NGram():
             ngrams = self.get_ngrams_for_request(request)
             ngram_frequency = self.get_ngram_frequency_ngram_dictionary(ngrams)
 
-            if all(elem in ngrams for elem in ngram_frequency):
-                has_other_ngrams = 0
-            else:
+            # Compare if an N-Gram of the request is not in all of the N-Grams
+            if not set(ngrams.keys()).issubset(set(self.ngrams.keys())):
+                #print(set(ngrams.keys()).intersection(set(self.ngrams.keys())))
                 has_other_ngrams = 1
+            else:
+                has_other_ngrams = 0
 
             ngram_frequency["Has other ngrams"] = has_other_ngrams
+
             vectors.append(list(ngram_frequency.values()))
             
         return np.asarray(vectors)
@@ -126,7 +129,11 @@ def normalize_request(request):
 
 def extract_parameter_values(request):
     """Extracts only the parameter values of a request
+    if the request has no parameter return an empty string
     """
+    if request.find("?") == -1:
+        return ""
+
     regex = re.compile(r"^([^\\?]*\?)")
     replaced = re.sub(regex, '',request)
     regex = re.compile(r"^([a-zA-Z0-9]*=)|(&[a-zA-Z0-9]*=)")
@@ -160,21 +167,21 @@ def main():
     #outlier.one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous)
 
     # Write Results to file
-    f = open("NGram_Result.txt", "x")
+    f = open("NGram_Result.txt", "w")
 
-    f.write("*************************\nClean Data:")
+    f.write("*************************\nClean Data:\n")
     for i in range(len(test_clean)):
         request = test_clean[i]
-        f.write("\nRequest:\n " + request["Request"])
-        f.write("\nFeature Vector:\n " + np.array2string(test_vectors_clean[i]))
-        f.write("\nResult:\n " + np.array2string(result_clean[i]))
+        f.write("\nRequest:\n" + request["Request"])
+        f.write("\nFeature Vector:\n" + np.array2string(test_vectors_clean[i]))
+        f.write("\nResult:\n" + np.array2string(result_clean[i]))
     
-    f.write("\n\n\n\n*************************\nAnomalous Data:")
+    f.write("\n\n\n\n\n\n\n\n*************************\nAnomalous Data:\n")
     for i in range(len(test_anomalous)):
         request = test_anomalous[i]
-        f.write("\nRequest:\n " + request["Request"])
-        f.write("\nFeature Vector:\n " + np.array2string(test_vectors_anomalous[i]))
-        f.write("\nResult:\n " + np.array2string(result_anomalous[i]))
+        f.write("\nRequest:\n" + request["Request"])
+        f.write("\nFeature Vector:\n" + np.array2string(test_vectors_anomalous[i]))
+        f.write("\nResult:\n" + np.array2string(result_anomalous[i]))
 
     f.close()
 
