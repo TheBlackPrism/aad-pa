@@ -23,7 +23,7 @@ class NGram():
             self.ngrams_probability[ngram] = float(self.ngrams[ngram]) / self.total_number_ngrams
 
     def get_probability_of_ngramset(self, ngrams):
-        """Returns the probability from a set of ngrams
+        """Returns the probability from a set of N-Grams
         """
         total_probability = 0
         for ngram in ngrams:
@@ -44,7 +44,7 @@ class NGram():
 
         for request in normalized_requests:
             for i in range(len(request)):
-                ngram = request[i:i + self.n] # Split a requests into the n-grams for the length of n
+                ngram = request[i:i + self.n] # Split a requests into the N-Grams for the length of n
                 if ngram in ngrams:
                     ngrams[ngram] += 1
                 else:
@@ -68,8 +68,8 @@ class NGram():
         return ngrams
     
     def get_feature_vectors(self, data):
-        """Get a set of two dimensional feature vectors
-        with probability as one axis and the occurences of ngrams as the other axis.
+        """Get a set of two dimensional feature vectors from a set of requests
+        with probability as one axis and the occurences of N-Grams as the other axis.
         """
         vectors = []
         for request in data:
@@ -80,12 +80,57 @@ class NGram():
             
         return np.asarray(vectors)
 
+    def get_feature_vectors_multidimensional(self, data):
+        """Get a set of a multidimensional feature vectors from a set of requests.
+        One dimension for each N-Gram of the training set, containing the frequency of the N-Gram in the according request
+        """
+        vectors = []
+        ngram_base = self.ngrams.keys()
+
+        for request in data:
+            ngrams = self.get_ngrams_for_request(request)
+            ngram_frequency = self.get_ngram_frequency_ngram_dictionary(ngrams)
+
+            if all(elem in ngrams for elem in ngram_frequency):
+                has_other_ngrams = 0
+            else:
+                has_other_ngrams = 1
+
+            ngram_frequency["Has other ngrams"] = has_other_ngrams
+            vectors.append(list(ngram_frequency.values()))
+            
+        return np.asarray(vectors)
+
+    def get_ngram_frequency_ngram_dictionary(self, ngrams_request):
+        """Get the frequnecy of ngrams in a request for ngrams in the training set
+        """
+        ngrams_frequency = {}
+        total_ngrams = sum(ngrams_request.values())
+
+        for ngram in self.ngrams:
+            if ngram in ngrams_request:
+                ngrams_frequency[ngram] = ngrams_request[ngram] / total_ngrams
+            else:
+                ngrams_frequency[ngram] = 0
+        return ngrams_frequency
+
 def normalize_request(request):
     """Normalizes a request by replacing all alphanumeric characters with @
     and removes all newline characters
     """
-    regex = re.compile(r"[a-zA-Z0-9]")
-    replaced = re.sub(regex, '@',request)
+    regex = re.compile(r"[a-zA-Z]")
+    replaced = re.sub(regex, 'a',request)
+    regex = re.compile(r"[0-9]")
+    replaced = re.sub(regex, '1',replaced)
+    return extract_parameter_values(replaced)
+
+def extract_parameter_values(request):
+    """Extracts only the parameter values of a request
+    """
+    regex = re.compile(r"^([^\\?]*\?)")
+    replaced = re.sub(regex, '',request)
+    regex = re.compile(r"^([a-zA-Z0-9]*=)|(&[a-zA-Z0-9]*=)")
+    replaced = re.sub(regex, '',replaced)
     return replaced
 
 def main():
@@ -107,14 +152,15 @@ def main():
     print("N-Grams extracted!")
 
     # Getting Feature Vectors
-    training_vectors = ng.get_feature_vectors(training_data)
-    test_vectors_clean = ng.get_feature_vectors(test_clean)
-    test_vectors_anomalous = ng.get_feature_vectors(test_anomalous)
+    training_vectors = ng.get_feature_vectors_multidimensional(training_data)
+    test_vectors_clean = ng.get_feature_vectors_multidimensional(test_clean)
+    test_vectors_anomalous = ng.get_feature_vectors_multidimensional(test_anomalous)
 
     outlier.local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous)
     outlier.one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous)
 
     # Plotting Vectors
+    """
     fig, ax = plt.subplots()
     samples = 3000
     ax.scatter(training_vectors[:samples,0], training_vectors[:samples,1], s=200,color = "g", alpha = 0.3, label = "Trainings Data")
@@ -125,6 +171,7 @@ def main():
     plt.title("Distribution of Feature Vectors")
     ax.legend()
     plt.show()
+    """
 
 if __name__ == "__main__":
     main()
