@@ -1,4 +1,5 @@
 import re
+import urllib.parse
 # Dictionary Structure Example of a Request
 #
 # Type: GET
@@ -46,6 +47,7 @@ A request dictionaire is looking like the following example
         # Attention! line is never validated
         # Whole parser is rather fragile
         for line in lines:
+            line = urllib.parse.unquote(line, encoding = "utf-8")
             if line == '\n':
                 if isreadingblock and not wasemptyline:
                     wasemptyline = True

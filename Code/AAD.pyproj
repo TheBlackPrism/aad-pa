@@ -12,7 +12,7 @@
     <OutputPath>.</OutputPath>
     <IsWindowsApplication>False</IsWindowsApplication>
     <InterpreterId>Global|ContinuumAnalytics|Anaconda37-64</InterpreterId>
-    <ProjectGuid>{c2366d58-3741-4a60-a089-9582d0ec42e2}</ProjectGuid>
+    <ProjectGuid>{4b151ad5-c67d-4855-9b3e-ec6c0acaff85}</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>

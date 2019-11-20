@@ -12,10 +12,13 @@ class NGram():
         self.ngrams = {}
         self.total_number_ngrams = 0
         self.ngrams_probability = {}
+        self.is_url = False
 
-    def fit(self, data):
+    def fit(self, data, is_url):
         """Reads a set of requests and stores probabilities and occurences in the class
         """
+        self.is_url = is_url
+
         self.ngrams = self.get_ngrams_for_all(data)
         self.total_number_ngrams = sum(self.ngrams.values())
 
@@ -40,7 +43,8 @@ class NGram():
         normalized_requests = []
 
         for request in data:
-            normalized_requests.append(normalize_request(request['Request']))
+            normalized = self.normalize_request(request['Request'])
+            normalized_requests.append(normalized)
 
         for request in normalized_requests:
             for i in range(len(request)):
@@ -56,10 +60,10 @@ class NGram():
         """Returns a set of N-Grams for a single request
         """
         ngrams = {}
-        normalized_request = normalize_request(request['Request'])
+        normalized = self.normalize_request(request['Request'])
 
-        for i in range(len(normalized_request) - self.n):
-            ngram = normalized_request[i:i + self.n]
+        for i in range(len(normalized) - self.n + 1): 
+            ngram = normalized[i:i + self.n]
             if ngram in ngrams:
                 ngrams[ngram] += 1
             else:
@@ -85,7 +89,7 @@ class NGram():
         One dimension for each N-Gram of the training set, containing the frequency of the N-Gram in the according request
         """
         vectors = []
-        ngram_base = self.ngrams.keys()
+        ngrams_per_request = []
 
         for request in data:
             ngrams = self.get_ngrams_for_request(request)
@@ -101,11 +105,12 @@ class NGram():
             ngram_frequency["Has other ngrams"] = has_other_ngrams
 
             vectors.append(list(ngram_frequency.values()))
+            ngrams_per_request.append(ngrams)
             
-        return np.asarray(vectors)
+        return np.asarray(vectors), ngrams_per_request
 
     def get_ngram_frequency_ngram_dictionary(self, ngrams_request):
-        """Get the frequnecy of ngrams in a request for ngrams in the training set
+        """Get the frequency of ngrams in a request for ngrams in the training set
         """
         ngrams_frequency = {}
         total_ngrams = sum(ngrams_request.values())
@@ -117,28 +122,63 @@ class NGram():
                 ngrams_frequency[ngram] = 0
         return ngrams_frequency
 
-def normalize_request(request):
-    """Normalizes a request by replacing all alphanumeric characters with @
-    and removes all newline characters
-    """
-    regex = re.compile(r"[a-zA-Z]")
-    replaced = re.sub(regex, 'a',request)
-    regex = re.compile(r"[0-9]")
-    replaced = re.sub(regex, '1',replaced)
-    return extract_parameter_values(replaced)
+    def normalize_request(self, request):
+        """Normalizes a request by replacing all alphabet characters with a and numeric characters with 1
+        """
+        regex = re.compile(r"[a-zA-Z]")
+        replaced = re.sub(regex, 'a',request)
+        regex = re.compile(r"[0-9]")
+        replaced = re.sub(regex, '1',replaced)
+        if self.is_url:
+            replaced = extract_url(replaced)
+        else:
+            replaced = extract_parameter(replaced)
+        return replaced
 
-def extract_parameter_values(request):
-    """Extracts only the parameter values of a request
+def extract_parameter(request):
+    """Extracts the parameter values of a request
     if the request has no parameter return an empty string
     """
     if request.find("?") == -1:
         return ""
 
+    # Remove url part
     regex = re.compile(r"^([^\\?]*\?)")
     replaced = re.sub(regex, '',request)
+
+    # Remove parameter names
     regex = re.compile(r"^([a-zA-Z0-9]*=)|(&[a-zA-Z0-9]*=)")
     replaced = re.sub(regex, '',replaced)
     return replaced
+
+def extract_url(request):
+    """Extracts the URL of a request
+    """
+    if request.find("?") == -1:
+        return request
+
+    # Remove Parameters
+    regex = re.compile(r"(\?.*)$")
+    replaced = re.sub(regex, '',request)
+
+    # Remove normalized localhost
+    regex = re.compile(r"^(aaaa://aaaaaaaaa:1111)|^(http://localhost:8080)")
+    replaced = re.sub(regex, '',replaced)
+
+    return replaced
+
+def merge_results(list1, list2):
+    """Merges two result lists into one.
+    If an entry in one of the lists is -1 the according result entry will be -1 too
+    """
+    result = []
+    for i in range(len(list1)):
+        if list1[i] == -1 or list2[i] == -1:
+            result.append(-1)
+        else:
+            result.append(1)
+
+    return np.asarray(result)
 
 def main():
     # Reading Data
@@ -153,34 +193,76 @@ def main():
     print("Extracting N-Grams...")
 
     # Training the N-Gram extractor
-    ng = NGram()
-    ng.fit(training_data)
+    ng_parameter = NGram()
+    ng_parameter.fit(training_data, False)
+
+    ng_url = NGram()
+    ng_url.fit(training_data, True)
     
     print("N-Grams extracted!")
 
     # Getting Feature Vectors
-    training_vectors = ng.get_feature_vectors_multidimensional(training_data)
-    test_vectors_clean = ng.get_feature_vectors_multidimensional(test_clean)
-    test_vectors_anomalous = ng.get_feature_vectors_multidimensional(test_anomalous)
+    training_vectors_parameter, ngrams_training_parameter = ng_parameter.get_feature_vectors_multidimensional(training_data)
+    test_vectors_clean_parameter, ngrams_clean_parameter = ng_parameter.get_feature_vectors_multidimensional(test_clean)
+    test_vectors_anomalous_parameter, ngrams_anomalous_parameter = ng_parameter.get_feature_vectors_multidimensional(test_anomalous)
+    
+    training_vectors_url, ngrams_training_url = ng_url.get_feature_vectors_multidimensional(training_data)
+    test_vectors_clean_url, ngrams_clean_url = ng_url.get_feature_vectors_multidimensional(test_clean)
+    test_vectors_anomalous_url, ngrams_anomalous_url = ng_url.get_feature_vectors_multidimensional(test_anomalous)
 
-    result_clean, result_anomalous = outlier.local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous)
-    #outlier.one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous)
+    result_clean_parameter, result_anomalous_parameter = outlier.local_outlier_detection(training_vectors_parameter, test_vectors_clean_parameter, test_vectors_anomalous_parameter)
+    result_clean_url, result_anomalous_url = outlier.local_outlier_detection(training_vectors_url, test_vectors_clean_url, test_vectors_anomalous_url)
+    #outlier.one_class_svm(training_vectors, test_vectors_clean,
+    #test_vectors_anomalous)
+
+    # Merge the two result lists
+    result_clean = merge_results(result_clean_parameter, result_clean_url)
+    result_anomalous = merge_results(result_anomalous_parameter, result_anomalous_url)
 
     # Write Results to file
-    f = open("NGram_Result.txt", "w")
+    f = open(str(ng_parameter.n) + "Gram_Result.txt", "w", encoding="utf-8")
+    
+    accuracy_anomalous = (float(np.count_nonzero(result_anomalous == -1))) / len(result_anomalous) * 100
+    accuracy_clean = (float(np.count_nonzero(result_clean == 1))) / len(result_clean) * 100
+    
+    f.write(str(ng_parameter.n) + "-Gram")
+    f.write("\nEvaluation:")
+    f.write("\nTrue Positive: %.2f %%" % accuracy_anomalous)
+    f.write("\nFalse Positive: %.2f %%" % (100 - accuracy_clean))
+    f.write("\nAccuracy: %.2f %%" % ((accuracy_anomalous * len(result_anomalous) + accuracy_clean * len(result_clean)) / (len(result_clean) + len(result_anomalous))))
 
-    f.write("*************************\nClean Data:\n")
+    f.write("\n*************************\nClean Data:\n")
     for i in range(len(test_clean)):
         request = test_clean[i]
-        f.write("\nRequest:\n" + request["Request"])
-        f.write("\nFeature Vector:\n" + np.array2string(test_vectors_clean[i]))
+        f.write("\n\nRequest:\n" + request["Request"])   
+
+        f.write("\nN-Grams URL:\n")
+        for keys,values in ngrams_clean_url[i].items():
+            f.write("{" + keys + " " + str(values) + "}")
+        f.write("\nFeature Vector URL:\n" + np.array2string(test_vectors_clean_url[i]))
+
+        f.write("\nN-Grams Parameter:\n")
+        for keys,values in ngrams_clean_parameter[i].items():
+            f.write("{" + keys + " " + str(values) + "}")
+        f.write("\nFeature Vector Parameter:\n" + np.array2string(test_vectors_clean_parameter[i]))
+
         f.write("\nResult:\n" + np.array2string(result_clean[i]))
     
     f.write("\n\n\n\n\n\n\n\n*************************\nAnomalous Data:\n")
     for i in range(len(test_anomalous)):
         request = test_anomalous[i]
-        f.write("\nRequest:\n" + request["Request"])
-        f.write("\nFeature Vector:\n" + np.array2string(test_vectors_anomalous[i]))
+        f.write("\n\nRequest:\n" + request["Request"])
+
+        f.write("\nN-Grams URL:\n")
+        for keys,values in ngrams_anomalous_url[i].items():
+            f.write("{" + keys + " " + str(values) + "}")
+        f.write("\nFeature Vector URL:\n" + np.array2string(test_vectors_anomalous_url[i]))
+
+        f.write("\nN-Grams Parameter:\n")
+        for keys,values in ngrams_anomalous_parameter[i].items():
+            f.write("{" + keys + " " + str(values) + "}")
+        f.write("\nFeature Vector Parameter:\n" + np.array2string(test_vectors_anomalous_parameter[i]))
+
         f.write("\nResult:\n" + np.array2string(result_anomalous[i]))
 
     f.close()
