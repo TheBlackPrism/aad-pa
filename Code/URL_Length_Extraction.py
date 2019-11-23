@@ -1,3 +1,7 @@
+import logfileparser as parser
+import numpy as np
+
+
 class URL_Length_Extraction(object):
     """description of class"""
 
@@ -53,12 +57,9 @@ def main():
     
     urlLength = URL_Length_Extraction()
     url_list = urlLength.get_urls(training_data)
+    print("URLs:")
+    print(url_list)
     url_length_list = urlLength.get_url_lengths(url_list)
-    
-   
-
-   
-   
     
     print("Done.")
     print("**************************")
