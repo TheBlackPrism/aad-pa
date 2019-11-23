@@ -1,5 +1,6 @@
 import logfileparser as parser
 import numpy as np
+import outlier
 
 
 class URL_Length_Extraction(object):
@@ -74,10 +75,15 @@ def main():
     print("Extracting URL Length...")
     
     urlLength = URL_Length_Extraction()
-    url_list = urlLength.get_urls(training_data)
-    url_length_list = urlLength.get_url_lengths(url_list)
-    feature_vector = urlLength.build_feature_vector(url_length_list)
+    training_vectors = urlLength.extract_feature(training_data)
+    test_vectors_clean = urlLength.extract_feature(test_clean)
+    test_vectors_anomalous = urlLength.extract_feature(test_anomalous)
+
+
+
     
+    outlier.local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous)
+    outlier.one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous)
     
     
     print("Done.")

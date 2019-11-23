@@ -117,14 +117,19 @@ could_be_assigned_clean_test_vector = [] #would be good. The vectors should belo
 r0 = clusters_radii[0]
 c0 = centroids[0]
 
+
 r1 = clusters_radii[1]
 c1 = centroids[1]
+
 
 r2 = clusters_radii[2]
 c2 = centroids[2]
 
 
 
+dist0 = 0
+dist1 = 0
+dist2 = 0
 for i in range(len(test_vectors_clean)):
 
     dist0 = np.linalg.norm(c0-test_vectors_clean[i])
@@ -134,6 +139,16 @@ for i in range(len(test_vectors_clean)):
         could_be_assigned_clean_test_vector.append(test_vectors_clean[i])
     else:
         could_not_be_assigned_clean_test_vector.append(test_vectors_clean[i])
+
+   
+    dist0 = 0
+    dist1 = 0
+    dist2 = 0
+
+
+
+
+
 
 
 detected_anomalies_in_anomalous_test_vector = [] #would be good. The vectors shouldn't belong to any cluster
@@ -146,11 +161,16 @@ for i in range(len(test_vectors_anomalous)):
     dist0 = np.linalg.norm(c0 - test_vectors_anomalous[i])
     dist1 = np.linalg.norm(c1 - test_vectors_anomalous[i])
     dist2 = np.linalg.norm(c2 - test_vectors_anomalous[i])
+    
 
     if dist0 <= r0 or dist1 <= r1 or dist2 <= r2:
         undetected_anomalies_in_anomalous_test_vector.append(test_vectors_anomalous[i])
     else:
         detected_anomalies_in_anomalous_test_vector.append(test_vectors_anomalous[i]) 
+    dist0 = 0
+    dist1 = 0
+    dist2 = 0
+
 
 
 print("Predicting successful!")    
@@ -158,29 +178,31 @@ print("**************************")
 print("Results:")
 
 # Evaluation
-accuracy_anomalous = len(detected_anomalies_in_anomalous_test_vector ) / len(test_vectors_anomalous) * 100
-accuracy_clean = len(could_be_assigned_clean_test_vector) / len(test_vectors_clean) * 100
+accuracy_anomalous = (len(detected_anomalies_in_anomalous_test_vector ) / len(test_vectors_anomalous)) * 100 #TP
+accuracy_clean = (len(could_be_assigned_clean_test_vector) / len(test_vectors_clean)) * 100
 
-print("True Positiv: %.2f %%" % accuracy_anomalous)
-print("False Positiv: %.2f %%" % (100 - accuracy_clean))
-print("Accuracy: %.2f %%" % ((accuracy_anomalous * len(test_vectors_anomalous) + accuracy_clean * len(test_vectors_clean)) / (len(test_vectors_clean) + len(test_vectors_anomalous))))
+print("True Positiv: %f %%" % accuracy_anomalous)
+print("False Positiv: %f %%" % (100 - accuracy_clean))
+print("Accuracy: %f %%" % ((accuracy_anomalous * len(test_vectors_anomalous) + accuracy_clean * len(test_vectors_clean)) / (len(test_vectors_clean) + len(test_vectors_anomalous))))
     
 # Plotting Vectors
-plt.subplot(2,1,1)
-samples = 300
-plt.scatter(training_vectors[:samples,0], training_vectors[:samples,1], s=200,color = "g", alpha = 0.5, label = "Trainings Data")
-plt.scatter(test_vectors_clean[:samples,0], test_vectors_clean[:samples,1], s=150, color = "b", alpha = 0.5, label = "Clean Data")
-plt.scatter(test_vectors_anomalous[:samples,0], test_vectors_anomalous[:samples,1], s=100, color = "r", alpha = 0.5, label = "Anomalous Data")
-plt.xlim(0.02,0.1)
-plt.ylim(0, 500)
-plt.title("Distribution of Feature Vectors")
-plt.legend()
-plt.grid()
+"""plt.subplot(2,1,1)
+samples = 300"""
+#plt.scatter(training_vectors[:samples,0], training_vectors[:samples,1], s=200,color = "g", alpha = 0.5, label = "Trainings Data")
+#plt.scatter(test_vectors_clean[:samples,0], test_vectors_clean[:samples,1], s=150, color = "b", alpha = 0.5, label = "Clean Data")
+#plt.scatter(test_vectors_anomalous[:samples,0], test_vectors_anomalous[:samples,1], s=100, color = "r", alpha = 0.5, label = "Anomalous Data")
+#plt.xlim(0.02,0.1)
+#plt.ylim(0, 500)
+#plt.title("Distribution of Feature Vectors")
+#plt.legend()
+#plt.grid()
+
 
 
 """Visualize clusters
 """
-plt.subplot(2,1,2)
+#plt.subplot(2,1,2)
+
 plt. scatter(
     training_vectors[clusters==0,0], training_vectors[clusters==0,1],
     s = 50, c = 'green',
