@@ -26,6 +26,14 @@ class URL_Length_Extraction(object):
 
         return url_lengths
 
+    def build_feature_vector(self, url_lengths):
+        feature_vector = []
+
+        for i in range(len(url_lengths)):
+            length = url_lengths[i]
+            feature_vector.append(length)
+
+        return feature_vector
 
         
 
@@ -57,9 +65,9 @@ def main():
     
     urlLength = URL_Length_Extraction()
     url_list = urlLength.get_urls(training_data)
-    print("URLs:")
-    print(url_list)
     url_length_list = urlLength.get_url_lengths(url_list)
+    feature_vector = urlLength.build_feature_vector(url_length_list)
+    
     
     print("Done.")
     print("**************************")
