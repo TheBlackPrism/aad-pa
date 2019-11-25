@@ -98,11 +98,11 @@ class NGram():
             # Compare if an N-Gram of the request is not in all of the N-Grams
             if not set(ngrams.keys()).issubset(set(self.ngrams.keys())):
                 #print(set(ngrams.keys()).intersection(set(self.ngrams.keys())))
-                has_other_ngrams = 1
+                remainder = 1 - sum(ngram_frequency.values())
             else:
-                has_other_ngrams = 0
+                remainder = 0
 
-            ngram_frequency["Has other ngrams"] = has_other_ngrams
+            ngram_frequency["Remainder"] = remainder
 
             vectors.append(list(ngram_frequency.values()))
             ngrams_per_request.append(ngrams)
@@ -228,11 +228,13 @@ def main():
     
     f.write(str(ng_parameter.n) + "-Gram")
     f.write("\nEvaluation:")
-    f.write("\nTrue Positive: %.2f %%" % accuracy_anomalous)
-    f.write("\nFalse Positive: %.2f %%" % (100 - accuracy_clean))
-    f.write("\nAccuracy: %.2f %%" % ((accuracy_anomalous * len(result_anomalous) + accuracy_clean * len(result_clean)) / (len(result_clean) + len(result_anomalous))))
+    f.write("\nTrue Positive: %.4f %%" % accuracy_anomalous)
+    f.write("\nFalse Positive: %.4f %%" % (100 - accuracy_clean))
+    f.write("\nAccuracy: %.4f %%" % ((accuracy_anomalous * len(result_anomalous) + accuracy_clean * len(result_clean)) / (len(result_clean) + len(result_anomalous))))
 
     f.write("\n*************************\nClean Data:\n")
+    f.write("\nFeature Vector Index URL:" + str(ng_url.ngrams.keys()))
+    f.write("\nFeature Vector Index Parameter:" + str(ng_parameter.ngrams.keys()))
     for i in range(len(test_clean)):
         request = test_clean[i]
         f.write("\n\nRequest:\n" + request["Request"])   
