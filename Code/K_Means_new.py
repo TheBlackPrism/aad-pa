@@ -150,6 +150,16 @@ for i in range(len(test_vectors_clean)):
 
 
 
+   
+    dist0 = 0
+    dist1 = 0
+    dist2 = 0
+
+
+
+
+
+
 
 detected_anomalies_in_anomalous_test_vector = [] #would be good. The vectors shouldn't belong to any cluster
 undetected_anomalies_in_anomalous_test_vector = [] #would be bad. The vectors shouldn't belong to any cluster
