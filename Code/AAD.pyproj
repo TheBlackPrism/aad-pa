@@ -30,6 +30,9 @@
     <Compile Include="outlier.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="URL_Length_Extraction.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="environment.yml" />
