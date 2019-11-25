@@ -78,9 +78,6 @@ class NGram():
         vectors = []
         for request in data:
             ngrams = self.get_ngrams_for_request(request)
-            if(len(ngrams)==0):
-                print(request)
-                print(ngrams)
             probability = self.get_probability_of_ngramset(ngrams)
             occurences = sum(ngrams.values())
             vectors.append([probability, occurences])
