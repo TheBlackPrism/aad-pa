@@ -154,15 +154,16 @@ def extract_parameter(request):
 def extract_url(request):
     """Extracts the URL of a request
     """
+    
+    # Remove normalized localhost
+    regex = re.compile(r"^(aaaa://aaaaaaaaa:1111)|^(http://localhost:8080)")
+    replaced = re.sub(regex, '',request)
+
     if request.find("?") == -1:
-        return request
+        return replaced
 
     # Remove Parameters
     regex = re.compile(r"(\?.*)$")
-    replaced = re.sub(regex, '',request)
-
-    # Remove normalized localhost
-    regex = re.compile(r"^(aaaa://aaaaaaaaa:1111)|^(http://localhost:8080)")
     replaced = re.sub(regex, '',replaced)
 
     return replaced
