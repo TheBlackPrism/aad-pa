@@ -11,6 +11,7 @@ print("**************************")
 training_data = parser.read_data('../Logfiles/Labeled/normalTrafficTraining.txt')
 test_clean = parser.read_data('../Logfiles/Labeled/normalTrafficTest.txt')
 test_anomalous = parser.read_data('../Logfiles/Labeled/anomalousTrafficTest.txt')
+print(training_data)
 
 print("Done!")
 print("**************************")
@@ -48,9 +49,22 @@ model = dbscan.fit(training_vectors)
 #test clean data
 print("Training done! Switch to testing.")
 print("**************************")
-print("Testing normal traffic:")
+print("Start prediction...")
 
 result_clean = dbscan_predict(model,training_vectors_clean)
+result_anomalous = dbscan_predict(model, training_vectors_anomalous)
+
+print("Predicting successful!")    
+print("**************************")
+print("Start evaluation...")
+
+accuracy_anomalous = (float(np.count_nonzero(result_anomalous==-1)))/len(result_anomalous) * 100
+accuracy_clean = (float(np.count_nonzero(result_clean == 1))) / len(result_clean)*100
+
+print("Results: ")
+print("True Positive %.f %%" % accuracy_anomalous)
+print("False Positive: %.f %%" % (100 - accuracy_clean))
+print("Accuracy: %.f %%" % ((accuracy_anomalous * len(result_anomalous) + accuracy_clean * len(result_clean)) / (len(result_clean) + len(result_anomalous))))
 
 
 #inspired (aka copied) from: https://stackoverflow.com/questions/27822752/scikit-learn-predicting-new-points-with-dbscan

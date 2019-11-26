@@ -21,12 +21,12 @@ print("Starting Feature Extraction...")
 
 
 # Training the N-Gramm extractor
-#ng = NGram()
-#ng.fit(training_data)
-urlLength = URL_Length_Extraction()
+ng = NGram()
+ng.fit(training_data,True)
+#urlLength = URL_Length_Extraction()
 
     
-print("URL Lengths extracted!")
+print("N-Grams extracted!")
 print("**************************")
 print("Starting K-Means Fitting...")
 
@@ -34,9 +34,14 @@ print("Starting K-Means Fitting...")
 
 
 # Getting Feature Vectors
-training_vectors = urlLength.extract_feature(training_data)
-test_vectors_clean = urlLength.extract_feature(test_clean)
-test_vectors_anomalous = urlLength.extract_feature(test_anomalous)
+#training_vectors = urlLength.extract_feature(training_data)
+#test_vectors_clean = urlLength.extract_feature(test_clean)
+#test_vectors_anomalous = urlLength.extract_feature(test_anomalous)
+
+training_vectors = ng.get_feature_vectors(training_data)
+test_vectors_clean = ng.get_feature_vectors(test_clean)
+test_vectors_anomalous = ng.get_feature_vectors(test_anomalous)
+
 
 
 print("\n**************************")
