@@ -13,8 +13,11 @@ def dbscan_predict(dbscan_model, X_new, metric=sp.spatial.distance.cosine):
     for j, x_new in enumerate(X_new):
         # Find a core sample closer than EPS
         
+        
         for i, x_core in enumerate(dbscan_model.components_):
-            if metric(x_new, x_core) < dbscan_model.eps:
+            x_new_reshaped = x_new.reshape(11,1)
+            x_core_reshaped = x_core.reshape(83,1)
+            if metric(x_new_reshaped, x_core_reshaped,w=None) < dbscan_model.eps:
                 # Assign label of x_core to x_new
                 y_new[j] = dbscan_model.labels_[dbscan_model.core_sample_indices_[i]]
                 break
