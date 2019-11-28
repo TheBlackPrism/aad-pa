@@ -4,7 +4,7 @@ import matplotlib as matplot
 import matplotlib.pyplot as plt
 import logfileparser as parser
 import outlier
-import pandas
+import pandas as pd
 
 class NGram():
 
@@ -304,7 +304,7 @@ def main():
 def read_csv(url):
     """Reads a CSV file and returns the feature vectors as an np array
     """
-    dict = pandas.read_csv(url).to_dict('index')
+    dict = pd.read_csv(url).to_dict('index')
     ngrams = list(dict.values())
     features = []
     for tuple in ngrams:
