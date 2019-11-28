@@ -4,6 +4,7 @@ import matplotlib as matplot
 import matplotlib.pyplot as plt
 import logfileparser as parser
 import outlier
+import pandas
 
 class NGram():
 
@@ -182,93 +183,109 @@ def merge_results(list1, list2):
     return np.asarray(result)
 
 def main():
-    # Reading Data
-    training_data = parser.read_data('../Logfiles/Labeled/normalTrafficTraining.txt')
-    test_clean = parser.read_data('../Logfiles/Labeled/normalTrafficTest.txt')
-    test_anomalous = parser.read_data('../Logfiles/Labeled/anomalousTrafficTest.txt')
+    training_url = '../Logfiles/Labeled/data-ngram-paramvalues-mp/featuresNormalTraining1ReducedLocalDecoded.csv'
+    test_clean_url = '../Logfiles/Labeled/data-ngram-paramvalues-mp/featuresNormalTest1ReducedLocalDecoded.csv'
+    test_anomalous_url = '../Logfiles/Labeled/data-ngram-paramvalues-mp/featuresAnomalousTest1ReducedLocalDecoded.csv'
 
-    training_data = parser.append_parameter_to_request(training_data)
-    test_clean = parser.append_parameter_to_request(test_clean)
-    test_anomalous = parser.append_parameter_to_request(test_anomalous)
-    print("**************************")
-    print("Extracting N-Grams...")
+    csv = re.compile(r"(csv)$")
+    if re.search(csv, training_url):
+        print("**************************")
+        print("Reading Feature-Vectors from CSV...")
+        training_data = read_csv(training_url)
+        test_clean = read_csv(test_clean_url)
+        test_anomalous = read_csv(test_anomalous_url)
 
-    # Training the N-Gram extractor
-    ng_parameter = NGram()
-    ng_parameter.fit(training_data, False)
+        result_clean_parameter, result_anomalous_parameter = outlier.one_class_svm(training_data, test_clean, test_anomalous)
 
-    ng_url = NGram()
-    ng_url.fit(training_data, True)
+    else:
+        # Reading Data
+        training_data = parser.read_data(training_url)
+        test_clean = parser.read_data(test_clean_url)
+        test_anomalous = parser.read_data(test_anomalous_url)
+
+        training_data = parser.append_parameter_to_request(training_data)
+        test_clean = parser.append_parameter_to_request(test_clean)
+        test_anomalous = parser.append_parameter_to_request(test_anomalous)
+
+        print("**************************")
+        print("Extracting N-Grams...")
+
+        # Training the N-Gram extractor
+        ng_parameter = NGram()
+        ng_parameter.fit(training_data, False)
+
+        ng_url = NGram()
+        ng_url.fit(training_data, True)
     
-    print("N-Grams extracted!")
+        print("N-Grams extracted!")
 
-    # Getting Feature Vectors
-    training_vectors_parameter, ngrams_training_parameter = ng_parameter.get_feature_vectors_multidimensional(training_data)
-    test_vectors_clean_parameter, ngrams_clean_parameter = ng_parameter.get_feature_vectors_multidimensional(test_clean)
-    test_vectors_anomalous_parameter, ngrams_anomalous_parameter = ng_parameter.get_feature_vectors_multidimensional(test_anomalous)
+        # Getting Feature Vectors
+        training_vectors_parameter, ngrams_training_parameter = ng_parameter.get_feature_vectors_multidimensional(training_data)
+        test_vectors_clean_parameter, ngrams_clean_parameter = ng_parameter.get_feature_vectors_multidimensional(test_clean)
+        test_vectors_anomalous_parameter, ngrams_anomalous_parameter = ng_parameter.get_feature_vectors_multidimensional(test_anomalous)
     
-    training_vectors_url, ngrams_training_url = ng_url.get_feature_vectors_multidimensional(training_data)
-    test_vectors_clean_url, ngrams_clean_url = ng_url.get_feature_vectors_multidimensional(test_clean)
-    test_vectors_anomalous_url, ngrams_anomalous_url = ng_url.get_feature_vectors_multidimensional(test_anomalous)
+        training_vectors_url, ngrams_training_url = ng_url.get_feature_vectors_multidimensional(training_data)
+        test_vectors_clean_url, ngrams_clean_url = ng_url.get_feature_vectors_multidimensional(test_clean)
+        test_vectors_anomalous_url, ngrams_anomalous_url = ng_url.get_feature_vectors_multidimensional(test_anomalous)
 
-    result_clean_parameter, result_anomalous_parameter = outlier.local_outlier_detection(training_vectors_parameter, test_vectors_clean_parameter, test_vectors_anomalous_parameter)
-    result_clean_url, result_anomalous_url = outlier.local_outlier_detection(training_vectors_url, test_vectors_clean_url, test_vectors_anomalous_url)
-    #outlier.one_class_svm(training_vectors, test_vectors_clean,
-    #test_vectors_anomalous)
+        result_clean_parameter, result_anomalous_parameter = outlier.local_outlier_detection(training_vectors_parameter, test_vectors_clean_parameter, test_vectors_anomalous_parameter)
+        result_clean_url, result_anomalous_url = outlier.local_outlier_detection(training_vectors_url, test_vectors_clean_url, test_vectors_anomalous_url)
+        #outlier.one_class_svm(training_vectors, test_vectors_clean,
+        #test_vectors_anomalous)
 
-    # Merge the two result lists
-    result_clean = merge_results(result_clean_parameter, result_clean_url)
-    result_anomalous = merge_results(result_anomalous_parameter, result_anomalous_url)
+        # Merge the two result lists
+        result_clean = merge_results(result_clean_parameter, result_clean_url)
+        result_anomalous = merge_results(result_anomalous_parameter, result_anomalous_url)
 
-    # Write Results to file
-    f = open(str(ng_parameter.n) + "Gram_Result.txt", "w", encoding="utf-8")
+        # Write Results to file
+        f = open(str(ng_parameter.n) + "Gram_Result.txt", "w", encoding="utf-8")
     
-    accuracy_anomalous = (float(np.count_nonzero(result_anomalous == -1))) / len(result_anomalous) * 100
-    accuracy_clean = (float(np.count_nonzero(result_clean == 1))) / len(result_clean) * 100
+        accuracy_anomalous = (float(np.count_nonzero(result_anomalous == -1))) / len(result_anomalous) * 100
+        accuracy_clean = (float(np.count_nonzero(result_clean == 1))) / len(result_clean) * 100
     
-    f.write(str(ng_parameter.n) + "-Gram")
-    f.write("\nEvaluation:")
-    f.write("\nTrue Positive: %.4f %%" % accuracy_anomalous)
-    f.write("\nFalse Positive: %.4f %%" % (100 - accuracy_clean))
-    f.write("\nAccuracy: %.4f %%" % ((accuracy_anomalous * len(result_anomalous) + accuracy_clean * len(result_clean)) / (len(result_clean) + len(result_anomalous))))
+        f.write(str(ng_parameter.n) + "-Gram")
+        f.write("\nEvaluation:")
+        f.write("\nTrue Positive: %.4f %%" % accuracy_anomalous)
+        f.write("\nFalse Positive: %.4f %%" % (100 - accuracy_clean))
+        f.write("\nAccuracy: %.4f %%" % ((accuracy_anomalous * len(result_anomalous) + accuracy_clean * len(result_clean)) / (len(result_clean) + len(result_anomalous))))
 
-    f.write("\n*************************\nClean Data:\n")
-    f.write("\nFeature Vector Index URL:" + str(ng_url.ngrams.keys()))
-    f.write("\nFeature Vector Index Parameter:" + str(ng_parameter.ngrams.keys()))
-    for i in range(len(test_clean)):
-        request = test_clean[i]
-        f.write("\n\nRequest:\n" + request["Request"])   
+        f.write("\n*************************\nClean Data:\n")
+        f.write("\nFeature Vector Index URL:" + str(ng_url.ngrams.keys()))
+        f.write("\nFeature Vector Index Parameter:" + str(ng_parameter.ngrams.keys()))
+        for i in range(len(test_clean)):
+            request = test_clean[i]
+            f.write("\n\nRequest:\n" + request["Request"])   
 
-        f.write("\nN-Grams URL:\n")
-        for keys,values in ngrams_clean_url[i].items():
-            f.write("{" + keys + " " + str(values) + "}")
-        f.write("\nFeature Vector URL:\n" + np.array2string(test_vectors_clean_url[i]))
+            f.write("\nN-Grams URL:\n")
+            for keys,values in ngrams_clean_url[i].items():
+                f.write("{" + keys + " " + str(values) + "}")
+            f.write("\nFeature Vector URL:\n" + np.array2string(test_vectors_clean_url[i]))
 
-        f.write("\nN-Grams Parameter:\n")
-        for keys,values in ngrams_clean_parameter[i].items():
-            f.write("{" + keys + " " + str(values) + "}")
-        f.write("\nFeature Vector Parameter:\n" + np.array2string(test_vectors_clean_parameter[i]))
+            f.write("\nN-Grams Parameter:\n")
+            for keys,values in ngrams_clean_parameter[i].items():
+                f.write("{" + keys + " " + str(values) + "}")
+            f.write("\nFeature Vector Parameter:\n" + np.array2string(test_vectors_clean_parameter[i]))
 
-        f.write("\nResult:\n" + np.array2string(result_clean[i]))
+            f.write("\nResult:\n" + np.array2string(result_clean[i]))
     
-    f.write("\n\n\n\n\n\n\n\n*************************\nAnomalous Data:\n")
-    for i in range(len(test_anomalous)):
-        request = test_anomalous[i]
-        f.write("\n\nRequest:\n" + request["Request"])
+        f.write("\n\n\n\n\n\n\n\n*************************\nAnomalous Data:\n")
+        for i in range(len(test_anomalous)):
+            request = test_anomalous[i]
+            f.write("\n\nRequest:\n" + request["Request"])
 
-        f.write("\nN-Grams URL:\n")
-        for keys,values in ngrams_anomalous_url[i].items():
-            f.write("{" + keys + " " + str(values) + "}")
-        f.write("\nFeature Vector URL:\n" + np.array2string(test_vectors_anomalous_url[i]))
+            f.write("\nN-Grams URL:\n")
+            for keys,values in ngrams_anomalous_url[i].items():
+                f.write("{" + keys + " " + str(values) + "}")
+            f.write("\nFeature Vector URL:\n" + np.array2string(test_vectors_anomalous_url[i]))
 
-        f.write("\nN-Grams Parameter:\n")
-        for keys,values in ngrams_anomalous_parameter[i].items():
-            f.write("{" + keys + " " + str(values) + "}")
-        f.write("\nFeature Vector Parameter:\n" + np.array2string(test_vectors_anomalous_parameter[i]))
+            f.write("\nN-Grams Parameter:\n")
+            for keys,values in ngrams_anomalous_parameter[i].items():
+                f.write("{" + keys + " " + str(values) + "}")
+            f.write("\nFeature Vector Parameter:\n" + np.array2string(test_vectors_anomalous_parameter[i]))
 
-        f.write("\nResult:\n" + np.array2string(result_anomalous[i]))
+            f.write("\nResult:\n" + np.array2string(result_anomalous[i]))
 
-    f.close()
+        f.close()
 
     # Plotting Vectors
     """
@@ -283,6 +300,17 @@ def main():
     ax.legend()
     plt.show()
     """
+
+def read_csv(url):
+    """Reads a CSV file and returns the feature vectors as an np array
+    """
+    dict = pandas.read_csv(url).to_dict('index')
+    ngrams = list(dict.values())
+    features = []
+    for tuple in ngrams:
+        feature = np.asarray(list(tuple.values()))
+        features.append(list(map(float, feature[:-2]))) # This is a hack to remove the last element of the featurevectors and convert the rest to floats
+    return np.asarray(features)
 
 if __name__ == "__main__":
     main()
