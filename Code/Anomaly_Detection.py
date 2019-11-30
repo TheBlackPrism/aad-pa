@@ -2,9 +2,9 @@ import logfileparser as parser
 import numpy as np
 import matplotlib as matplot
 import matplotlib.pyplot as plt
-import outlier
-import NGram
-import URL_Length_Extraction
+from outlier import *
+from NGram import *
+from URL_Length_Extraction import *
 
 class Anomaly_Detection():
     """description of class"""
@@ -25,7 +25,7 @@ class Anomaly_Detection():
 
         return training_data, test_clean, test_anomalous
 
-    def feature_extraction(self, extraction_name, trainging_data, test_data_clean, test_data_anomalous):
+    def feature_extraction(self, extraction_name, training_data, test_data_clean, test_data_anomalous):
 
         if(extraction_name == 'ngram parameter'):
             print("**************************")
@@ -36,7 +36,7 @@ class Anomaly_Detection():
             ng_parameter.fit(training_data, False)
 
             # Getting Feature Vectors
-            training_vectors_parameter, ngrams_training_parameter = ng_parameter.get_feature_vectors_multidimensional(trainging_data)
+            training_vectors_parameter, ngrams_training_parameter = ng_parameter.get_feature_vectors_multidimensional(training_data)
             test_vectors_clean_parameter, ngrams_clean_parameter = ng_parameter.get_feature_vectors_multidimensional(test_data_clean)
             test_vectors_anomalous_parameter, ngrams_anomalous_parameter = ng_parameter.get_feature_vectors_multidimensional(test_data_anomalous)
 
@@ -48,19 +48,19 @@ class Anomaly_Detection():
             ng_url.fit(training_data, True)
 
             #Getting Feature Vectors
-            training_vectors_url, ngrams_training_url = ng_url.get_feature_vectors_multidimensional(trainging_data)
+            training_vectors_url, ngrams_training_url = ng_url.get_feature_vectors_multidimensional(training_data)
             test_vectors_clean_url, ngrams_clean_url = ng_url.get_feature_vectors_multidimensional(test_data_clean)
             test_vectors_anomalous_url, ngrams_anomalous_url = ng_url.get_feature_vectors_multidimensional(test_data_anomalous)
 
-            return training_vectors_url, test_vectors_clean_url, test_vectors_anomalous_url
+            return training_vectors_url,test_vectors_clean_url,test_vectors_anomalous_url
 
         elif(extraction_name == 'url length'):
             ul = URL_Length_Extraction()
-            training_vectors = ul.extract_feature(trainging_data)
+            training_vectors = ul.extract_feature(training_data)
             test_vectors_clean = ul.extract_feature(test_data_clean)
             test_vectors_anomalous = ul.extract_feature(test_data_anomalous)
             
-            return training_vectors, test_vectors_clean, test_vectors_anomalous
+            return training_vectors,test_vectors_clean,test_vectors_anomalous
 
         else:
             print('Extraction Method not found.')
@@ -96,7 +96,7 @@ def main():
     print('Reading data...')
 
     # Reading Data
-    training_data, test_clean, test_anomalous = ad.reading_data_from_file(path)
+    training_data,test_clean,test_anomalous = ad.reading_data_from_file(path)
 
     print("**************************")
     print('Data read!')
@@ -105,7 +105,7 @@ def main():
 
 
     feature_extraction = str(input())
-    training_vectors, test_vectors_clean, test_vectors_anomalous = ad.feature_extraction(feature_extraction, training_data, test_clean, test_anomalous)
+    training_vectors,test_vectors_clean,test_vectors_anomalous = ad.feature_extraction(feature_extraction, training_data, test_clean, test_anomalous)
 
     print("**************************")
     print('Feature Extracted!')
@@ -114,7 +114,7 @@ def main():
 
     alg_name = str(input())
 
-    result_clean, result_anomalous = ad.apply_algorithm(alg_name, training_vectors, test_vectors_clean, test_vectors_anomalous)
+    result_clean,result_anomalous = ad.apply_algorithm(alg_name, training_vectors, test_vectors_clean, test_vectors_anomalous)
 
     print("**************************")
     print('Done!')
