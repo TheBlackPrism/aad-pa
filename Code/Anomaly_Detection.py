@@ -66,6 +66,26 @@ class Anomaly_Detection():
             print('Extraction Method not found.')
             return 
 
+    def apply_algorithm(self, alg_name, training_vectors, test_vectors_clean, test_vectors_anomalous):
+        if(alg_name == 'ol'):
+            ol = outlier()
+            result_clean, result_anomalous = ol.local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous)
+
+            return result_clean, result_anomalous
+
+        elif(alg_name == 'svm'):
+            svm = outlier()
+            result_clean, result_anomalous = ol.one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous)
+
+            return result_clean, result_anomalous
+
+        else:
+            print('Algorithm Name not found.')
+            return
+
+
+
+
 
 
 def main():
@@ -83,17 +103,22 @@ def main():
     print('Please enter the feature extraction you would like to use...')
 
     feature_extraction = str(input())
+    training_vectors, test_vectors_clean, test_vectors_anomalous = ad.feature_extraction(feature_extraction, training_data, test_clean, test_anomalous)
 
-    
-        
-
+    print("**************************")
+    print('Feature Extracted!')
     print('Please enter the algorithm you would like to use...')
 
     alg_name = str(input())
 
-    if alg_name == 'ol':
-        ol = outlier()
-        ol.local_outlier_detection()
+    result_clean, result_anomalous = ad.apply_algorithm(alg_name, training_vectors, test_vectors_clean, test_vectors_anomalous)
+
+    print("**************************")
+    print('Done!')
+    print('Starting evaluation...')
+
+
+    
 
 
 if __name__ == "__main__":
