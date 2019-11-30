@@ -4,9 +4,10 @@ import scipy as sp
 from sklearn.cluster import DBSCAN
 import logfileparser as parser
 from NGram import *
+import outlier
 
 #inspired (aka copied) from: https://stackoverflow.com/questions/27822752/scikit-learn-predicting-new-points-with-dbscan
-def dbscan_predict(dbscan_model, X_new, metric=sp.spatial.distance.euclidean):
+def __dbscan_predict(dbscan_model, X_new, metric=sp.spatial.distance.euclidean):
     # Result is noise by default
     y_new = np.ones(shape=len(X_new), dtype=int)*-1 
     # Iterate all input samples for a label
@@ -19,6 +20,34 @@ def dbscan_predict(dbscan_model, X_new, metric=sp.spatial.distance.euclidean):
                 break
 
     return y_new
+
+def dbscan(training_vectors, clean_vectors, anomalous_vectors, eps=0.3, min_samples=3):
+    print("**************************")
+    print("Starting DB-Scan Fitting...")
+    print("Training model:")
+    print("eps = %.2f" % eps)
+    print("minimum number of samples needed for a cluster: %.d" % min_samples)
+
+    #Building the clustering model
+    #eps is the radius of the cluster
+    """eps is the radius of the cluster.
+    min_samples gives the minimum number of samples that must be found within
+    eps to form a cluster.
+    Both parameters must be chosen carefully, depending on the dataset.
+    """
+    dbscan = DBSCAN(eps = eps, min_samples=min_samples)
+    model = dbscan.fit(training_vectors)
+
+    print("Training done! Switch to testing.")
+    print("**************************")
+    print("Start prediction...")
+
+    result_clean = __dbscan_predict(model, clean_vectors)
+    result_anomalous = __dbscan_predict(model, anomalous_vectors)
+
+    print("Predicting successful!")    
+
+    return result_clean, result_anomalous
 
 def main():
     print("**************************")
@@ -54,57 +83,19 @@ def main():
     test_vectors_clean_url, ngrams_clean_url = ng_url.get_feature_vectors_multidimensional(test_clean)
     test_vectors_anomalous_url, ngrams_anomalous_url = ng_url.get_feature_vectors_multidimensional(test_anomalous)
 
-    eps = 0.3
-    samples = 3
-
     print("N-Gramms extracted!")
-    print("**************************")
-    print("Starting DB-Scan Fitting...")
-    print("\n**************************")
-    print("Training model:")
-    print("eps = %.2f" % eps)
-    print("minimum number of samples needed for a cluster: %.d" % samples)
 
-    #Building the clustering model
-    #eps is the radius of the cluster
-    """eps is the radius of the cluster.
-    min_samples gives the minimum number of samples that must be found within
-    eps to form a cluster.
-    Both parameters must be chosen carefully, depending on the dataset.
-    """
-    dbscan_url = DBSCAN(eps = eps, min_samples=samples)
-    dbscan_param = DBSCAN(eps = eps, min_samples=samples)
-    model_url = dbscan_url.fit(training_vectors_url)
-    model_param = dbscan_param.fit(training_vectors_parameter)
+    eps = 0.1
+    min_samples = 3
 
-            
-    #test clean data
-    print("Training done! Switch to testing.")
-    print("**************************")
-    print("Start prediction...")
-
-
-    result_clean_url = dbscan_predict(model_url, test_vectors_clean_url)
-    result_anomalous_url = dbscan_predict(model_url, test_vectors_anomalous_url)
-    result_clean_param = dbscan_predict(model_param, test_vectors_clean_parameter)
-    result_anomalous_param = dbscan_predict(model_param, test_vectors_anomalous_parameter)
+    result_clean_param, result_anomalous_param = dbscan(training_vectors_parameter, test_vectors_clean_parameter, test_vectors_anomalous_parameter, eps, min_samples)
+    result_clean_url, result_anomalous_url = dbscan(training_vectors_url, test_vectors_clean_url, test_vectors_anomalous_url, eps, min_samples)
 
     # Merge the two result lists
     result_clean = merge_results(result_clean_param, result_clean_url)
     result_anomalous = merge_results(result_anomalous_param, result_anomalous_url)
 
-    print("Predicting successful!")    
-    print("**************************")
-    print("Start evaluation...")
-
-    accuracy_anomalous = (float(np.count_nonzero(result_anomalous==-1)))/len(result_anomalous) * 100
-    accuracy_clean = (float(np.count_nonzero(result_clean >= 0))) / len(result_clean)*100
-
-    print("Results: ")
-    print("True Positive: %.4f %%" % accuracy_anomalous)
-    print("True Negative: %.4f %%" % accuracy_clean)
-    print("Accuracy: %.4f %%" % ((accuracy_anomalous * len(result_anomalous) + accuracy_clean * len(result_clean)) / (len(result_clean) + len(result_anomalous))))
-
+    outlier.evaluate_detection(result_clean, result_anomalous)
 
 if __name__ == "__main__":
     main()
