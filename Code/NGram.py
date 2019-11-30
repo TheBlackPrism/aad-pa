@@ -186,7 +186,12 @@ def main():
     training_url = '../Logfiles/Labeled/data-ngram-paramvalues-mp/featuresNormalTraining1ReducedLocalDecoded.csv'
     test_clean_url = '../Logfiles/Labeled/data-ngram-paramvalues-mp/featuresNormalTest1ReducedLocalDecoded.csv'
     test_anomalous_url = '../Logfiles/Labeled/data-ngram-paramvalues-mp/featuresAnomalousTest1ReducedLocalDecoded.csv'
-
+    
+    """
+    training_url = '../Logfiles/Labeled/data-raw-paramvalues-mp/normalTrafficTraining'
+    test_clean_url = '../Logfiles/Labeled/data-raw-paramvalues-mp/normalTrafficTest'
+    test_anomalous_url = '../Logfiles/Labeled/data-raw-paramvalues-mp/anomalousTrafficTest'
+    """
     csv = re.compile(r"(csv)$")
     if re.search(csv, training_url):
         print("**************************")
@@ -196,7 +201,8 @@ def main():
         test_anomalous = read_csv(test_anomalous_url)
 
         result_clean_parameter, result_anomalous_parameter = outlier.one_class_svm(training_data, test_clean, test_anomalous)
-
+        #result_clean_parameter, result_clean_parameter = outlier.local_outlier_detection(training_data, test_clean, test_anomalous)
+ 
     else:
         # Reading Data
         training_data = parser.read_data(training_url)
@@ -230,8 +236,8 @@ def main():
 
         result_clean_parameter, result_anomalous_parameter = outlier.local_outlier_detection(training_vectors_parameter, test_vectors_clean_parameter, test_vectors_anomalous_parameter)
         result_clean_url, result_anomalous_url = outlier.local_outlier_detection(training_vectors_url, test_vectors_clean_url, test_vectors_anomalous_url)
-        #outlier.one_class_svm(training_vectors, test_vectors_clean,
-        #test_vectors_anomalous)
+        # outlier.one_class_svm(training_vectors, test_vectors_clean,
+        # test_vectors_anomalous)
 
         # Merge the two result lists
         result_clean = merge_results(result_clean_parameter, result_clean_url)
@@ -242,8 +248,8 @@ def main():
     
         accuracy_anomalous = (float(np.count_nonzero(result_anomalous == -1))) / len(result_anomalous) * 100
         accuracy_clean = (float(np.count_nonzero(result_clean == 1))) / len(result_clean) * 100
-    
-        f.write(str(ng_parameter.n) + "-Gram")
+   
+        f.write(str(ng_parameter.n) + "-Gram rema logs")
         f.write("\nEvaluation:")
         f.write("\nTrue Positive: %.4f %%" % accuracy_anomalous)
         f.write("\nFalse Positive: %.4f %%" % (100 - accuracy_clean))
@@ -309,7 +315,8 @@ def read_csv(url):
     features = []
     for tuple in ngrams:
         feature = np.asarray(list(tuple.values()))
-        features.append(list(map(float, feature[:-2]))) # This is a hack to remove the last element of the featurevectors and convert the rest to floats
+        features.append(list(map(float, feature[:-2]))) # This is a hack to remove the last element of the featurevectors and convert
+                                                        # the rest to floats
     return np.asarray(features)
 
 if __name__ == "__main__":
