@@ -26,7 +26,7 @@ def local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_a
     print("Predicting successful!")    
     print("**************************")
 
-    evaluate_detection(result_clean, result_anomalous)
+    #evaluate_detection(result_clean, result_anomalous)
     if plot:
         plot_clustering(split_anomalous_clean(test_vectors_anomalous, result_anomalous), training_vectors)
 
@@ -52,7 +52,7 @@ def one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous, 
     print("Predicting successful!")    
     print("**************************")
 
-    evaluate_detection(result_clean, result_anomalous)
+    #evaluate_detection(result_clean, result_anomalous)
     if plot:
         plot_clustering(split_anomalous_clean(test_vectors_anomalous, result_anomalous), training_vectors)
 
