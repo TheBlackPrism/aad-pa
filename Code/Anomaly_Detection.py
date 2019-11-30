@@ -82,7 +82,7 @@ class Anomaly_Detection():
         else:
             print('Algorithm Name not found.')
             return
-
+           
 
 
 
@@ -101,6 +101,8 @@ def main():
     print("**************************")
     print('Data read!')
     print('Please enter the feature extraction you would like to use...')
+    print('ngram url = N-Grams using the URL\n ngram parameter = N-Grams using the parameter values\n url length = Length of the URLs')
+
 
     feature_extraction = str(input())
     training_vectors, test_vectors_clean, test_vectors_anomalous = ad.feature_extraction(feature_extraction, training_data, test_clean, test_anomalous)
@@ -108,6 +110,7 @@ def main():
     print("**************************")
     print('Feature Extracted!')
     print('Please enter the algorithm you would like to use...')
+    print('ol = Local Outlier Detection\n svm = One Class Support Vector Maching\n')
 
     alg_name = str(input())
 
@@ -116,6 +119,16 @@ def main():
     print("**************************")
     print('Done!')
     print('Starting evaluation...')
+
+    accuracy_anomalous = (float(np.count_nonzero(result_anomalous == -1))) / len(result_anomalous) * 100
+    accuracy_clean = (float(np.count_nonzero(result_clean == 1))) / len(result_clean) * 100
+
+    print("\nEvaluation:")
+    print("\nTrue Positive: %.4f %%" % accuracy_anomalous)
+    print("\nFalse Positive: %.4f %%" % (100 - accuracy_clean))
+    print("\nAccuracy: %.4f %%" % ((accuracy_anomalous * len(result_anomalous) + accuracy_clean * len(result_clean)) / (len(result_clean) + len(result_anomalous))))
+
+
 
 
     
