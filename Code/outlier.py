@@ -96,6 +96,6 @@ def evaluate_detection(result_clean, result_anomalous):
     accuracy_clean = (float(np.count_nonzero(result_clean == 1))) / len(result_clean) * 100
     
     print("Results:")
-    print("True Positive: %.2f %%\tSamples: %d" % accuracy_anomalous, len(result_anomalous))
-    print("True Positive: %.2f %%\tSamples: %d" % accuracy_clean, len(result_clean))
+    print("True Positive: %.2f %%\tSamples: %d" % (accuracy_anomalous, len(result_anomalous)))
+    print("True Positive: %.2f %%\tSamples: %d" % (accuracy_clean, len(result_clean)))
     print("Accuracy: %.2f %%" % ((accuracy_anomalous * len(result_anomalous) + accuracy_clean * len(result_clean)) / (len(result_clean) + len(result_anomalous))))
