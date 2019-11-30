@@ -6,18 +6,14 @@ import logfileparser as parser
 from NGram import *
 
 #inspired (aka copied) from: https://stackoverflow.com/questions/27822752/scikit-learn-predicting-new-points-with-dbscan
-def dbscan_predict(dbscan_model, X_new, metric=sp.spatial.distance.cosine):
+def dbscan_predict(dbscan_model, X_new, metric=sp.spatial.distance.euclidean):
     # Result is noise by default
     y_new = np.ones(shape=len(X_new), dtype=int)*-1 
     # Iterate all input samples for a label
     for j, x_new in enumerate(X_new):
         # Find a core sample closer than EPS
-        
-        
         for i, x_core in enumerate(dbscan_model.components_):
-            x_new_reshaped = x_new.reshape(11,1)
-            x_core_reshaped = x_core.reshape(83,1)
-            if metric(x_new_reshaped, x_core_reshaped,w=None) < dbscan_model.eps:
+            if metric(x_new, x_core) < dbscan_model.eps:
                 # Assign label of x_core to x_new
                 y_new[j] = dbscan_model.labels_[dbscan_model.core_sample_indices_[i]]
                 break
@@ -25,8 +21,8 @@ def dbscan_predict(dbscan_model, X_new, metric=sp.spatial.distance.cosine):
     return y_new
 
 def main():
-    print("Reading Data...")
     print("**************************")
+    print("Reading Data...")
 
     # Reading Data
     training_data = parser.read_data('../Logfiles/Labeled/normalTrafficTraining.txt')
@@ -58,14 +54,16 @@ def main():
     test_vectors_clean_url, ngrams_clean_url = ng_url.get_feature_vectors_multidimensional(test_clean)
     test_vectors_anomalous_url, ngrams_anomalous_url = ng_url.get_feature_vectors_multidimensional(test_anomalous)
 
-    
+    eps = 0.3
+    samples = 3
+
     print("N-Gramms extracted!")
     print("**************************")
     print("Starting DB-Scan Fitting...")
     print("\n**************************")
     print("Training model:")
-    print("eps = 0.3")
-    print("minimum number of samples needed for a cluster: 3")
+    print("eps = %.2f" % eps)
+    print("minimum number of samples needed for a cluster: %.d" % samples)
 
     #Building the clustering model
     #eps is the radius of the cluster
@@ -74,9 +72,10 @@ def main():
     eps to form a cluster.
     Both parameters must be chosen carefully, depending on the dataset.
     """
-    dbscan = DBSCAN(eps = 0.3, min_samples=3)
-    model_url = dbscan.fit(training_vectors_url)
-    model_param = dbscan.fit(training_vectors_parameter)
+    dbscan_url = DBSCAN(eps = eps, min_samples=samples)
+    dbscan_param = DBSCAN(eps = eps, min_samples=samples)
+    model_url = dbscan_url.fit(training_vectors_url)
+    model_param = dbscan_param.fit(training_vectors_parameter)
 
             
     #test clean data
@@ -99,12 +98,12 @@ def main():
     print("Start evaluation...")
 
     accuracy_anomalous = (float(np.count_nonzero(result_anomalous==-1)))/len(result_anomalous) * 100
-    accuracy_clean = (float(np.count_nonzero(result_clean == 1))) / len(result_clean)*100
+    accuracy_clean = (float(np.count_nonzero(result_clean >= 0))) / len(result_clean)*100
 
     print("Results: ")
-    print("True Positive %.f %%" % accuracy_anomalous)
-    print("False Positive: %.f %%" % (100 - accuracy_clean))
-    print("Accuracy: %.f %%" % ((accuracy_anomalous * len(result_anomalous) + accuracy_clean * len(result_clean)) / (len(result_clean) + len(result_anomalous))))
+    print("True Positive: %.4f %%" % accuracy_anomalous)
+    print("True Negative: %.4f %%" % accuracy_clean)
+    print("Accuracy: %.4f %%" % ((accuracy_anomalous * len(result_anomalous) + accuracy_clean * len(result_clean)) / (len(result_clean) + len(result_anomalous))))
 
 
 if __name__ == "__main__":
