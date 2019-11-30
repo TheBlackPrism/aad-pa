@@ -2,7 +2,7 @@ import logfileparser as parser
 import numpy as np
 import matplotlib as matplot
 import matplotlib.pyplot as plt
-from outlier import *
+import outlier
 from NGram import *
 from URL_Length_Extraction import *
 
@@ -68,20 +68,31 @@ class Anomaly_Detection():
 
     def apply_algorithm(self, alg_name, training_vectors, test_vectors_clean, test_vectors_anomalous):
         if(alg_name == 'ol'):
-            ol = outlier()
-            result_clean, result_anomalous = ol.local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous)
+            result_clean, result_anomalous = outlier.local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous)
 
             return result_clean, result_anomalous
 
         elif(alg_name == 'svm'):
-            svm = outlier()
-            result_clean, result_anomalous = ol.one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous)
+            result_clean, result_anomalous = outlier.one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous)
 
             return result_clean, result_anomalous
 
         else:
             print('Algorithm Name not found.')
             return
+
+    def merge_results(list1, list2):
+        """Merges two result lists into one.
+        If an entry in one of the lists is -1 the according result entry will be -1 too
+        """
+        result = []
+        for i in range(len(list1)):
+            if list1[i] == -1 or list2[i] == -1:
+                result.append(-1)
+            else:
+                result.append(1)
+
+        return np.asarray(result)
            
 
 
@@ -90,6 +101,8 @@ class Anomaly_Detection():
 
 def main():
     ad = Anomaly_Detection()
+    result_clean = []
+    result_anomalous = []
     print('Please enter the path of the logfiles...')
     path = str(input())
     print("**************************")
@@ -101,20 +114,42 @@ def main():
     print("**************************")
     print('Data read!')
     print('Please enter the feature extraction you would like to use...')
-    print('ngram url = N-Grams using the URL\n ngram parameter = N-Grams using the parameter values\n url length = Length of the URLs')
+    print('ngram = N-Grams using the URL length and parameter values\n url length = Length of the URLs')
 
 
     feature_extraction = str(input())
-    training_vectors,test_vectors_clean,test_vectors_anomalous = ad.feature_extraction(feature_extraction, training_data, test_clean, test_anomalous)
 
-    print("**************************")
-    print('Feature Extracted!')
-    print('Please enter the algorithm you would like to use...')
-    print('ol = Local Outlier Detection\n svm = One Class Support Vector Maching\n')
+    if(feature_extraction == 'ngram'):
 
-    alg_name = str(input())
+        training_vectors_url,test_vectors_clean_url,test_vectors_anomalous_url = ad.feature_extraction('ngram url', training_data, test_clean, test_anomalous)
+        training_vectors_param,test_vectors_clean_param,test_vectors_anomalous_param = ad.feature_extraction('ngram parameter', training_data, test_clean, test_anomalous)
 
-    result_clean,result_anomalous = ad.apply_algorithm(alg_name, training_vectors, test_vectors_clean, test_vectors_anomalous)
+
+        print("**************************")
+        print('Feature Extracted!')
+        print('Please enter the algorithm you would like to use...')
+        print('ol = Local Outlier Detection\n svm = One Class Support Vector Maching\n')
+
+        alg_name = str(input())
+        result_clean_url,result_anomalous_url = ad.apply_algorithm(alg_name,training_vectors_url,test_vectors_clean_url,test_vectors_anomalous_url)
+        result_clean_param, result_anomalous_param = ad.apply_algorithm(alg_name,training_vectors_param,test_vectors_clean_param,test_vectors_anomalous_param)
+
+        # Merge the two result lists
+        result_clean = merge_results(result_clean_parameter, result_clean_url)
+        result_anomalous = merge_results(result_anomalous_parameter, result_anomalous_url)
+
+    else:
+
+        training_vectors,test_vectors_clean,test_vectors_anomalous = ad.feature_extraction(feature_extraction,training_data,test_clean,test_anomalous)
+        print("**************************")
+        print('Feature Extracted!')
+        print('Please enter the algorithm you would like to use...')
+        print('ol = Local Outlier Detection\n svm = One Class Support Vector Maching\n')
+
+        alg_name = str(input())
+        result_clean,result_anomalous = ad.apply_algorithm(alg_name,training_vectors,test_vectors_clean,test_vectors_anomalous)
+
+   
 
     print("**************************")
     print('Done!')
