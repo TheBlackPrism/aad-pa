@@ -6,6 +6,7 @@ import outlier
 from NGram import *
 from URL_Length_Extraction import *
 from pathlib import Path
+import DBSCAN
 
 class Anomaly_Detection():
     """description of class"""
@@ -38,6 +39,11 @@ class Anomaly_Detection():
             result_clean, result_anomalous = outlier.one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous)
 
             return result_clean, result_anomalous
+
+        elif(alg_name =='dbscan'):
+            result_clean,result_anomalous = DBSCAN.dbscan(training_vectors,test_vectors_clean,test_vectors_anomalous)
+
+            return result_clean,result_anomalous
 
         else:
             print('Algorithm Name not found.')
@@ -105,7 +111,7 @@ def main():
     print("**************************")
     print('Feature extraction successful!')
     print('Please enter the algorithm you would like to use...')
-    print('ol = Local Outlier Detection\n svm = One Class Support Vector Maching\n')
+    print('ol = Local Outlier Detection\n svm = One Class Support Vector Maching\n dbscan = DBSCAN\n')
 
     alg_name = str(input())
 
