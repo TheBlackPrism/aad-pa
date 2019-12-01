@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import outlier
 from NGram import *
 from URL_Length_Extraction import *
+from pathlib import Path
 
 class Anomaly_Detection():
     """description of class"""
@@ -12,12 +13,13 @@ class Anomaly_Detection():
         pass
 
     def reading_data_from_file(self,path):
+        
         if(path == ''):
             print('Invalid path name. Please enter valid path...')
             return
-        training_data = parser.read_data('../Logfiles/Labeled/normalTrafficTraining.txt')
-        test_clean = parser.read_data('../Logfiles/Labeled/normalTrafficTest.txt')
-        test_anomalous = parser.read_data('../Logfiles/Labeled/anomalousTrafficTest.txt')
+        training_data = parser.read_data(path / "normalTrafficTraining.txt")
+        test_clean = parser.read_data( path / "normalTrafficTest.txt")
+        test_anomalous = parser.read_data(path / "anomalousTrafficTest.txt")
 
         training_data = parser.append_parameter_to_request(training_data)
         test_clean = parser.append_parameter_to_request(test_clean)
@@ -25,28 +27,6 @@ class Anomaly_Detection():
 
         return training_data, test_clean, test_anomalous
 
-    def feature_extraction(self, extraction_name, training_data, test_data_clean, test_data_anomalous):
-
-        if(extraction_name == 'ngram parameter'):
-            print("**************************")
-            print("Extracting N-Grams...")
-
-            
-
-        elif(extraction_name == 'ngram url'):
-
-            
-
-            return training_vectors_url,test_vectors_clean_url,test_vectors_anomalous_url
-
-        elif(extraction_name == 'url length'):
-            
-            
-            return training_vectors,test_vectors_clean,test_vectors_anomalous
-
-        else:
-            print('Extraction Method not found.')
-            return 
 
     def apply_algorithm(self, alg_name, training_vectors, test_vectors_clean, test_vectors_anomalous):
         if(alg_name == 'ol'):
@@ -85,6 +65,7 @@ def main():
     ad = Anomaly_Detection()
     print('Please enter the path of the logfiles...')
     path = str(input())
+    path = Path(path)
     print("**************************")
     print('Reading data...')
 
