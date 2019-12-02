@@ -156,7 +156,7 @@ def main():
     accuracy_anomalous_overall = (float(np.count_nonzero(result_overall_anomalous == -1))) / len(result_overall_anomalous) * 100
     accuracy_clean_overall = (float(np.count_nonzero(result_overall_clean == 1))) / len(result_overall_clean) * 100
 
-    print("\nOverall Evaluation")
+    print("\nOverall Evaluation " + alg_name)
     print("\nTrue Positive: %.4f %%" % accuracy_anomalous_overall)
     print("\nFalse Positive: %.4f %%" % (100 - accuracy_clean_overall))
     print("\nAccuracy: %.4f %%" % ((accuracy_anomalous_overall * len(result_overall_anomalous) + accuracy_clean_overall * len(result_overall_clean)) / (len(result_overall_clean) + len(result_overall_anomalous))))
