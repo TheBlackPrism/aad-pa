@@ -123,6 +123,11 @@ def main():
 
     result_clean_url_length,result_anomalous_url_length = ad.apply_algorithm(alg_name,training_vectors_url_length,test_vectors_clean_url_length,test_vectors_anomalous_url_length)
     
+    print(result_clean_ng)
+    print(result_clean_url_length)
+
+    result_overall_clean = ad.merge_results(result_clean_ng, result_clean_url_length)
+    result_overall_anomalous = ad.merge_results(result_anomalous_ng,result_anomalous_url_length)
 
     print("**************************")
     print('Done!')
@@ -146,6 +151,15 @@ def main():
     print("\nTrue Positive: %.4f %%" % accuracy_anomalous_url_length)
     print("\nFalse Positive: %.4f %%" % (100 - accuracy_clean_url_length))
     print("\nAccuracy: %.4f %%" % ((accuracy_anomalous_url_length * len(result_anomalous_url_length) + accuracy_clean_url_length * len(result_clean_url_length)) / (len(result_clean_url_length) + len(result_anomalous_url_length))))
+
+    #overall evaluation
+    accuracy_anomalous_overall = (float(np.count_nonzero(result_overall_anomalous == -1))) / len(result_overall_anomalous) * 100
+    accuracy_clean_overall = (float(np.count_nonzero(result_overall_clean == 1))) / len(result_overall_clean) * 100
+
+    print("\nOverall Evaluation")
+    print("\nTrue Positive: %.4f %%" % accuracy_anomalous_overall)
+    print("\nFalse Positive: %.4f %%" % (100 - accuracy_clean_overall))
+    print("\nAccuracy: %.4f %%" % ((accuracy_anomalous_overall * len(result_overall_anomalous) + accuracy_clean_overall * len(result_overall_clean)) / (len(result_overall_clean) + len(result_overall_anomalous))))
 
 
 
