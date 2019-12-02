@@ -30,7 +30,7 @@ class Anomaly_Detection():
 
 
     def apply_algorithm(self, alg_name, training_vectors, test_vectors_clean, test_vectors_anomalous):
-        if(alg_name == 'ol'):
+        if(alg_name == 'lof'):
             result_clean, result_anomalous = outlier.local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous)
 
             return result_clean, result_anomalous
@@ -111,7 +111,7 @@ def main():
     print("**************************")
     print('Feature extraction successful!')
     print('Please enter the algorithm you would like to use...')
-    print('ol = Local Outlier Detection\n svm = One Class Support Vector Maching\n dbscan = DBSCAN\n')
+    print('lof = Local Outlier Detection\n svm = One Class Support Vector Maching\n dbscan = DBSCAN\n')
 
     alg_name = str(input())
 
