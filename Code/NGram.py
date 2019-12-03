@@ -183,15 +183,16 @@ def merge_results(list1, list2):
     return np.asarray(result)
 
 def main():
+    """
     training_url = '../Logfiles/Labeled/data-ngram-paramvalues-mp/featuresNormalTraining1ReducedLocalDecoded.csv'
     test_clean_url = '../Logfiles/Labeled/data-ngram-paramvalues-mp/featuresNormalTest1ReducedLocalDecoded.csv'
     test_anomalous_url = '../Logfiles/Labeled/data-ngram-paramvalues-mp/featuresAnomalousTest1ReducedLocalDecoded.csv'
-    
     """
+
     training_url = '../Logfiles/Labeled/data-raw-paramvalues-mp/normalTrafficTraining'
     test_clean_url = '../Logfiles/Labeled/data-raw-paramvalues-mp/normalTrafficTest'
     test_anomalous_url = '../Logfiles/Labeled/data-raw-paramvalues-mp/anomalousTrafficTest'
-    """
+    
     csv = re.compile(r"(csv)$")
     if re.search(csv, training_url):
         print("**************************")
@@ -209,9 +210,9 @@ def main():
         test_clean = parser.read_data(test_clean_url)
         test_anomalous = parser.read_data(test_anomalous_url)
 
-        training_data = parser.append_parameter_to_request(training_data)
-        test_clean = parser.append_parameter_to_request(test_clean)
-        test_anomalous = parser.append_parameter_to_request(test_anomalous)
+        training_data = parser.append_parameter_to_request(training_data, True)
+        test_clean = parser.append_parameter_to_request(test_clean, True)
+        test_anomalous = parser.append_parameter_to_request(test_anomalous, True)
 
         print("**************************")
         print("Extracting N-Grams...")

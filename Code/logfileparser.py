@@ -107,9 +107,10 @@ def __remove_eol_from_requests(requests):
         list.append(request)
     return list
 
-def append_parameter_to_request(requests):
+def append_parameter_to_request(requests, ignore_empty_parameters = False):
     """Appends the parameter of a post request at the end of the requested 
-url sepparated by a ? and removes HTML/*.* from url
+url sepparated by a ? and removes HTML/*.* from url.
+Requests without parameter are ignored when the flag is set to true.
     """
     regex = re.compile(r"( HTTP/.\..)$")
     list = []
@@ -123,7 +124,10 @@ url sepparated by a ? and removes HTML/*.* from url
             parameter = ""
 
         entry["Request"] = replaced + parameter
-        list.append(entry)
+        if not ignore_empty_parameters:
+            list.append(entry)
+        elif not entry["Request"].find("?") == -1:
+            list.append(entry)
     return list
 
 if __name__ == '__main__':
