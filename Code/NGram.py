@@ -189,9 +189,9 @@ def main():
     test_anomalous_url = '../Logfiles/Labeled/data-ngram-paramvalues-mp/featuresAnomalousTest1ReducedLocalDecoded.csv'
     """
 
-    training_url = '../Logfiles/Labeled/data-raw-paramvalues-mp/normalTrafficTraining'
-    test_clean_url = '../Logfiles/Labeled/data-raw-paramvalues-mp/normalTrafficTest'
-    test_anomalous_url = '../Logfiles/Labeled/data-raw-paramvalues-mp/anomalousTrafficTest'
+    training_url = '../Logfiles/Labeled/rema-short/normalTraining'
+    test_clean_url = '../Logfiles/Labeled/rema-short/normalTest'
+    test_anomalous_url = '../Logfiles/Labeled/rema-short/anomalousTest'
     
     csv = re.compile(r"(csv)$")
     if re.search(csv, training_url):
@@ -243,6 +243,8 @@ def main():
         # Merge the two result lists
         result_clean = merge_results(result_clean_parameter, result_clean_url)
         result_anomalous = merge_results(result_anomalous_parameter, result_anomalous_url)
+
+        outlier.evaluate_detection(result_clean, result_anomalous)
 
         # Write Results to file
         f = open(str(ng_parameter.n) + "Gram_Result.txt", "w", encoding="utf-8")
