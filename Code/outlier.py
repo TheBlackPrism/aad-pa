@@ -39,7 +39,7 @@ def one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous, 
     print("Starting One Class SVM...")
 
     # Fitting model for novel predictions
-    svm = OneClassSVM(gamma = "scale").fit(training_vectors)
+    svm = OneClassSVM(gamma = "scale", nu=0.1).fit(training_vectors)
     
     print("Fitting successful!")    
     print("**************************")
