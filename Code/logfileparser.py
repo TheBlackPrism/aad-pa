@@ -107,7 +107,7 @@ def __remove_eol_from_requests(requests):
         list.append(request)
     return list
 
-def append_parameter_to_request(requests, ignore_empty_parameters = False):
+def append_parameter_to_request(requests, ignore_empty_parameters=False):
     """Appends the parameter of a post request at the end of the requested 
 url sepparated by a ? and removes HTML/*.* from url.
 Requests without parameter are ignored when the flag is set to true.
@@ -129,6 +129,27 @@ Requests without parameter are ignored when the flag is set to true.
         elif not entry["Request"].find("?") == -1:
             list.append(entry)
     return list
+
+def write_csv(filename, ngrams, feature_vectors):
+    """Writes Feature vectors and their names into the specified file.
+    """
+    ngram = list(ngrams.keys())
+    first_vector = feature_vectors[0]
+    f = open(filename, "w", encoding="utf-8")
+    print(ngram)
+    for i in range(len(ngram)):
+        if i > 0:
+            f.write(",")
+        f.write(ngram[i])
+    f.write("\n")
+    
+    for vector in feature_vectors:
+        for i in range(len(vector)):
+            if i > 0:
+                f.write(",")
+            f.write(str(vector[i]))
+        f.write("\n")
+    f.close()
 
 if __name__ == '__main__':
 

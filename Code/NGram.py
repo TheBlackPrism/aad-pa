@@ -25,6 +25,7 @@ class NGram():
 
         for ngram in self.ngrams:
             self.ngrams_probability[ngram] = float(self.ngrams[ngram]) / self.total_number_ngrams
+        self.ngrams["Remainder"] = 0
 
     def get_probability_of_ngramset(self, ngrams):
         """Returns the probability from a set of N-Grams
