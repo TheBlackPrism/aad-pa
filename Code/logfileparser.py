@@ -151,6 +151,18 @@ def write_csv(filename, ngrams, feature_vectors):
         f.write("\n")
     f.close()
 
+def read_csv(url, unnecessary_columns = 0):
+    """Reads a CSV file and returns the feature vectors as an np array
+    """
+    dict = pd.read_csv(url).to_dict('index')
+    ngrams = list(dict.values())
+    features = []
+    for tuple in ngrams:
+        # This is a hack to remove the last elements of the featurevectors and convert the rest to floats
+        feature = np.asarray(list(tuple.values()))
+        features.append(list(map(float, feature[:-unnecessary_columns]))) 
+    return np.asarray(features)
+
 if __name__ == '__main__':
 
     # Test by reading all the datasets

@@ -198,9 +198,9 @@ def main():
     if re.search(csv, training_url):
         print("**************************")
         print("Reading Feature-Vectors from CSV...")
-        training_data = read_csv(training_url)
-        test_clean = read_csv(test_clean_url)
-        test_anomalous = read_csv(test_anomalous_url)
+        training_data = parser.read_csv(training_url)
+        test_clean = parser.read_csv(test_clean_url)
+        test_anomalous = parser.read_csv(test_anomalous_url)
 
         result_clean_parameter, result_anomalous_parameter = outlier.one_class_svm(training_data, test_clean, test_anomalous)
         #result_clean_parameter, result_clean_parameter = outlier.local_outlier_detection(training_data, test_clean, test_anomalous)
@@ -310,18 +310,6 @@ def main():
     ax.legend()
     plt.show()
     """
-
-def read_csv(url, unnecessary_columns = 0):
-    """Reads a CSV file and returns the feature vectors as an np array
-    """
-    dict = pd.read_csv(url).to_dict('index')
-    ngrams = list(dict.values())
-    features = []
-    for tuple in ngrams:
-        # This is a hack to remove the last elements of the featurevectors and convert the rest to floats
-        feature = np.asarray(list(tuple.values()))
-        features.append(list(map(float, feature[:-unnecessary_columns]))) 
-    return np.asarray(features)
 
 if __name__ == "__main__":
     main()
