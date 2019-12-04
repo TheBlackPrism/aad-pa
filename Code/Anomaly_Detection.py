@@ -70,11 +70,11 @@ def evaluate_detection(result_clean, result_anomalous):
     accuracy_clean = (float(np.count_nonzero(result_clean == 1))) / len(result_clean) * 100
 
     print("Anomalous Samples: %d" % len(result_anomalous))
+    print("Clean Samples: %d\n" % len(result_clean))
+
     print("True Positive: %.2f%%" % accuracy_anomalous)
-    print("False Negative: %.2f%%" % (100 - accuracy_anomalous))
-    print("\nClean Samples: %d" % len(result_clean))
-    print("True Negative: %.2f%%" % accuracy_clean)
     print("False Positive: %.2f%%" % (100 - accuracy_clean))
+
 
 def main():
     ad = Anomaly_Detection()
@@ -125,7 +125,15 @@ def main():
     print('Feature extraction successful!')
     print("**************************")
     print("Analysing URL N-Grams:")
-    result_clean_ng_url,result_anomalous_ng_url = ad.apply_algorithm(alg_name,training_vectors_url,test_vectors_clean_url,test_vectors_anomalous_url)
+
+    # Workaround that prevents svm applied to url as features are not spread in the url and points on the same place 
+    # cannot form a cluster in svm
+    if alg_name == 'svm':
+        url_alg = 'lof'
+    else:
+        url_alg = alg_name
+
+    result_clean_ng_url,result_anomalous_ng_url = ad.apply_algorithm(url_alg,training_vectors_url,test_vectors_clean_url,test_vectors_anomalous_url)
     
     
     print("Analysing Parameter N-Grams:")
