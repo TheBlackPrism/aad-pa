@@ -125,23 +125,25 @@ def main():
     print('lof = Local Outlier Detection\nsvm = One Class Support Vector Maching\ndbscan = DBSCAN')
 
     alg_name = str(input())
-
+    
+    print("**************************")
+    print("Analysing URL N-Grams:")
     result_clean_ng_url,result_anomalous_ng_url = ad.apply_algorithm(alg_name,training_vectors_url,test_vectors_clean_url,test_vectors_anomalous_url)
+    
+    
+    print("Analysing Parameter N-Grams:")
     result_clean_ng_param,result_anomalous_ng_param = ad.apply_algorithm(alg_name,training_vectors_parameter,test_vectors_clean_parameter,test_vectors_anomalous_parameter)
 
     result_clean_ng = ad.merge_results(result_clean_ng_param,result_clean_ng_url)
     result_anomalous_ng = ad.merge_results(result_anomalous_ng_param,result_anomalous_ng_url)
-
-    result_clean_url_length,result_anomalous_url_length = ad.apply_algorithm(alg_name,training_vectors_url_length,test_vectors_clean_url_length,test_vectors_anomalous_url_length)
     
-    print(result_clean_ng)
-    print(result_clean_url_length)
+    print("Analysing URL Length:")
+    result_clean_url_length,result_anomalous_url_length = ad.apply_algorithm(alg_name,training_vectors_url_length,test_vectors_clean_url_length,test_vectors_anomalous_url_length)
 
     result_overall_clean = ad.merge_results(result_clean_ng, result_clean_url_length)
     result_overall_anomalous = ad.merge_results(result_anomalous_ng,result_anomalous_url_length)
 
-    print("**************************")
-    print('Done!')
+
     print('Starting evaluation...')
 
     #Evaluate N-Grams
@@ -151,9 +153,10 @@ def main():
     #Evaluate URL-Length
     print("\nURL Length Evaluation")
     evaluate_detection(result_clean_url_length, result_anomalous_url_length)
-
+    
+    print("\n**************************")
     #overall evaluation
-    print("\nOverall Evaluation " + alg_name)
+    print("\nOverall Evaluation " + alg_name.upper() + "\n")
     evaluate_detection(result_overall_clean, result_overall_anomalous)
 
 if __name__ == "__main__":
