@@ -83,16 +83,21 @@ def main():
     print(os.listdir(path))
     path += str(input('Logfiles/'))
     path = Path(path)
+
+    print("**************************")
+    print('Please enter the algorithm you would like to use...')
+    print('lof = Local Outlier Detection\nsvm = One Class Support Vector Machine\ndbscan = DBSCAN')
+
+    alg_name = str(input('Algorithm: ')).lower()
+
     print("**************************")
     print('Reading data...')
 
     # Reading Data
     training_data,test_clean,test_anomalous = ad.reading_data_from_file(path)
 
-    print("**************************")
     print('Data read!')
     print('Starting feature extraction...')
-    print("**************************")
 
 
     # Training the N-Gram extractor
@@ -117,15 +122,7 @@ def main():
     test_vectors_clean_url_length = ul.extract_feature(test_clean)
     test_vectors_anomalous_url_length = ul.extract_feature(test_anomalous)
 
-
-
-    print("**************************")
     print('Feature extraction successful!')
-    print('Please enter the algorithm you would like to use...')
-    print('lof = Local Outlier Detection\nsvm = One Class Support Vector Maching\ndbscan = DBSCAN')
-
-    alg_name = str(input())
-    
     print("**************************")
     print("Analysing URL N-Grams:")
     result_clean_ng_url,result_anomalous_ng_url = ad.apply_algorithm(alg_name,training_vectors_url,test_vectors_clean_url,test_vectors_anomalous_url)
@@ -156,8 +153,9 @@ def main():
     
     print("\n**************************")
     #overall evaluation
-    print("\nOverall Evaluation " + alg_name.upper() + "\n")
+    print("Overall Evaluation " + alg_name.upper() + "\n")
     evaluate_detection(result_overall_clean, result_overall_anomalous)
+    print()
 
 if __name__ == "__main__":
     main()

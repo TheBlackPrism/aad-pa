@@ -10,15 +10,14 @@ clean = "Clean"
 def local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous, contamination='auto', n_neighbors=20):
     """Predicting outliers using Local Outlier Detection
     """
-    print("**************************")
     print("Starting Local Outlier Fitting...")
 
     # Fitting model for novel predictions
     km = LocalOutlierFactor(novelty = True, contamination = contamination, n_neighbors = n_neighbors).fit(training_vectors)
     
-    print("Fitting successful!")    
-    print("**************************")
+    print("Fitting successful!")
     print("Starting Prediction...")
+
     # Predict returns 1 for inlier and -1 for outlier
     result_clean = km.predict(test_vectors_clean)
     result_anomalous = km.predict(test_vectors_anomalous)
@@ -28,17 +27,15 @@ def local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_a
 
     return result_clean, result_anomalous
 
-def one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous, gamma = 'scale', nu = 0.1):
+def one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous, gamma = 'scale', nu = 0.5):
     """Predicting Outlier using a one Class SVM
     """
-    print("**************************")
     print("Starting One Class SVM...")
 
     # Fitting model for novel predictions
     svm = OneClassSVM(gamma = gamma, nu = nu).fit(training_vectors)
     
     print("Fitting successful!")    
-    print("**************************")
     print("Starting Prediction...")
 
     # Predict returns 1 for inlier and -1 for outlier
