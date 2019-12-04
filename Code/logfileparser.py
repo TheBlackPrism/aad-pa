@@ -136,7 +136,6 @@ def write_csv(filename, ngrams, feature_vectors):
     ngram = list(ngrams.keys())
     first_vector = feature_vectors[0]
     f = open(filename, "w", encoding="utf-8")
-    print(ngram)
     for i in range(len(ngram)):
         if i > 0:
             f.write(",")
@@ -164,7 +163,6 @@ def read_csv(url, unnecessary_columns = 0):
     return np.asarray(features)
 
 if __name__ == '__main__':
-
     # Test by reading all the datasets
     dict = read_data("../Logfiles/Labeled/normalTrafficTraining.txt")
     dict = read_data("../Logfiles/Labeled/normalTrafficTest.txt")

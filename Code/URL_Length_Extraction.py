@@ -46,17 +46,6 @@ class URL_Length_Extraction(object):
 
         return feature_vector
 
-        
-
-
-
-
-
-               
-
-
-
-
 def main():
 
 
