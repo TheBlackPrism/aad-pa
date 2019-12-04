@@ -7,14 +7,14 @@ from matplotlib import colors
 anomalous = "Anomalous"
 clean = "Clean"
 
-def local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous, contamination='auto', n_neighbours=20):
+def local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous, contamination='auto', n_neighbors=20):
     """Predicting outliers using Local Outlier Detection
     """
     print("**************************")
     print("Starting Local Outlier Fitting...")
 
     # Fitting model for novel predictions
-    km = LocalOutlierFactor(novelty = True, contamination = contamination, n_neighbours = n_neighbours).fit(training_vectors)
+    km = LocalOutlierFactor(novelty = True, contamination = contamination, n_neighbors = n_neighbors).fit(training_vectors)
     
     print("Fitting successful!")    
     print("**************************")
@@ -28,7 +28,7 @@ def local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_a
 
     return result_clean, result_anomalous
 
-def one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous, gamma = 'auto', nu = 0.1):
+def one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous, gamma = 'scale', nu = 0.1):
     """Predicting Outlier using a one Class SVM
     """
     print("**************************")
