@@ -23,9 +23,9 @@ class Anomaly_Detection():
         test_clean = parser.read_data(path / "normalTrafficTest")
         test_anomalous = parser.read_data(path / "anomalousTrafficTest")
 
-        training_data = parser.append_parameter_to_request(training_data)
-        test_clean = parser.append_parameter_to_request(test_clean)
-        test_anomalous = parser.append_parameter_to_request(test_anomalous)
+        training_data = parser.append_parameter_to_request(training_data, True)
+        test_clean = parser.append_parameter_to_request(test_clean, True)
+        test_anomalous = parser.append_parameter_to_request(test_anomalous, True)
 
         return training_data, test_clean, test_anomalous
 
@@ -72,7 +72,7 @@ def evaluate_detection(result_clean, result_anomalous):
     print("Anomalous Samples: %d" % len(result_anomalous))
     print("True Positive: %.2f%%" % accuracy_anomalous)
     print("False Negative: %.2f%%" % (100 - accuracy_anomalous))
-    print("Clean Samples: %d" % len(result_clean))
+    print("\nClean Samples: %d" % len(result_clean))
     print("True Negative: %.2f%%" % accuracy_clean)
     print("False Positive: %.2f%%" % (100 - accuracy_clean))
 
