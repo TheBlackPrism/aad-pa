@@ -8,17 +8,18 @@ import pandas as pd
 
 class NGram():
 
-    def __init__(self, n=2):
-        self.n = n
+    def __init__(self):
+        self.n = 0
         self.ngrams = {}
         self.total_number_ngrams = 0
         self.ngrams_probability = {}
         self.is_url = False
 
-    def fit(self, data, is_url):
+    def fit(self, data, is_url, n = 2):
         """Reads a set of requests and stores probabilities and occurences in the class
         """
         self.is_url = is_url
+        self.n = n
 
         self.ngrams = self.get_ngrams_for_all(data)
         self.total_number_ngrams = sum(self.ngrams.values())
