@@ -7,6 +7,7 @@ from NGram import *
 from URL_Length_Extraction import *
 from pathlib import Path
 import DBSCAN
+import os
 
 class Anomaly_Detection():
     """description of class"""
@@ -18,13 +19,13 @@ class Anomaly_Detection():
         if(path == ''):
             print('Invalid path name. Please enter valid path...')
             return
-        training_data = parser.read_data(path / "normalTrafficTraining.txt")
-        test_clean = parser.read_data( path / "normalTrafficTest.txt")
-        test_anomalous = parser.read_data(path / "anomalousTrafficTest.txt")
+        training_data = parser.read_data(path / "normalTrafficTraining")
+        test_clean = parser.read_data(path / "normalTrafficTest")
+        test_anomalous = parser.read_data(path / "anomalousTrafficTest")
 
-        training_data = parser.append_parameter_to_request(training_data)
-        test_clean = parser.append_parameter_to_request(test_clean)
-        test_anomalous = parser.append_parameter_to_request(test_anomalous)
+        training_data = parser.append_parameter_to_request(training_data, True)
+        test_clean = parser.append_parameter_to_request(test_clean, True)
+        test_anomalous = parser.append_parameter_to_request(test_anomalous, True)
 
         return training_data, test_clean, test_anomalous
 
@@ -40,7 +41,7 @@ class Anomaly_Detection():
 
             return result_clean, result_anomalous
 
-        elif(alg_name =='dbscan'):
+        elif(alg_name == 'dbscan'):
             result_clean,result_anomalous = DBSCAN.dbscan(training_vectors,test_vectors_clean,test_vectors_anomalous)
 
             return result_clean,result_anomalous
@@ -60,28 +61,43 @@ class Anomaly_Detection():
             else:
                 result.append(1)
 
-        return np.asarray(result)
-           
+        return np.asarray(result)  
 
+def evaluate_detection(result_clean, result_anomalous):
+    """Evaluates the detection rate of a model and prints it
+    """
+    accuracy_anomalous = (float(np.count_nonzero(result_anomalous == -1))) / len(result_anomalous) * 100
+    accuracy_clean = (float(np.count_nonzero(result_clean == 1))) / len(result_clean) * 100
 
+    print("Anomalous Samples: %d" % len(result_anomalous))
+    print("Clean Samples: %d\n" % len(result_clean))
 
+    print("True Positive: %.2f%%" % accuracy_anomalous)
+    print("False Positive: %.2f%%" % (100 - accuracy_clean))
 
 
 def main():
     ad = Anomaly_Detection()
-    print('Please enter the path of the logfiles...')
-    path = str(input())
+    print('Please enter name of the dataset...')
+    path = '../Logfiles/'
+    print(os.listdir(path))
+    path += str(input('Logfiles/'))
     path = Path(path)
+
+    print("**************************")
+    print('Please enter the algorithm you would like to use...')
+    print('lof = Local Outlier Detection\nsvm = One Class Support Vector Machine\ndbscan = DBSCAN')
+
+    alg_name = str(input('Algorithm: ')).lower()
+
     print("**************************")
     print('Reading data...')
 
     # Reading Data
     training_data,test_clean,test_anomalous = ad.reading_data_from_file(path)
 
-    print("**************************")
     print('Data read!')
     print('Starting feature extraction...')
-    print("**************************")
 
 
     # Training the N-Gram extractor
@@ -106,62 +122,48 @@ def main():
     test_vectors_clean_url_length = ul.extract_feature(test_clean)
     test_vectors_anomalous_url_length = ul.extract_feature(test_anomalous)
 
-
-
-    print("**************************")
     print('Feature extraction successful!')
-    print('Please enter the algorithm you would like to use...')
-    print('lof = Local Outlier Detection\n svm = One Class Support Vector Maching\n dbscan = DBSCAN\n')
+    print("**************************")
+    print("Analysing URL N-Grams:")
 
-    alg_name = str(input())
+    # Workaround that prevents svm applied to url as features are not spread in the url and points on the same place 
+    # cannot form a cluster in svm
+    if alg_name == 'svm':
+        url_alg = 'lof'
+    else:
+        url_alg = alg_name
 
-    result_clean_ng_url,result_anomalous_ng_url = ad.apply_algorithm(alg_name,training_vectors_url,test_vectors_clean_url,test_vectors_anomalous_url)
+    result_clean_ng_url,result_anomalous_ng_url = ad.apply_algorithm(url_alg,training_vectors_url,test_vectors_clean_url,test_vectors_anomalous_url)
+    
+    
+    print("Analysing Parameter N-Grams:")
     result_clean_ng_param,result_anomalous_ng_param = ad.apply_algorithm(alg_name,training_vectors_parameter,test_vectors_clean_parameter,test_vectors_anomalous_parameter)
 
     result_clean_ng = ad.merge_results(result_clean_ng_param,result_clean_ng_url)
     result_anomalous_ng = ad.merge_results(result_anomalous_ng_param,result_anomalous_ng_url)
-
-    result_clean_url_length,result_anomalous_url_length = ad.apply_algorithm(alg_name,training_vectors_url_length,test_vectors_clean_url_length,test_vectors_anomalous_url_length)
     
-    print(result_clean_ng)
-    print(result_clean_url_length)
+    print("Analysing URL Length:")
+    result_clean_url_length,result_anomalous_url_length = ad.apply_algorithm(alg_name,training_vectors_url_length,test_vectors_clean_url_length,test_vectors_anomalous_url_length)
 
     result_overall_clean = ad.merge_results(result_clean_ng, result_clean_url_length)
     result_overall_anomalous = ad.merge_results(result_anomalous_ng,result_anomalous_url_length)
 
-    print("**************************")
-    print('Done!')
+
     print('Starting evaluation...')
 
     #Evaluate N-Grams
-    accuracy_anomalous_ng = (float(np.count_nonzero(result_anomalous_ng == -1))) / len(result_anomalous_ng) * 100
-    accuracy_clean_ng = (float(np.count_nonzero(result_clean_ng == 1))) / len(result_clean_ng) * 100
-
-    print("\nEvaluation using N-Grams:")
-    print("\nTrue Positive: %.4f %%" % accuracy_anomalous_ng)
-    print("\nFalse Positive: %.4f %%" % (100 - accuracy_clean_ng))
-    print("\nAccuracy: %.4f %%" % ((accuracy_anomalous_ng * len(result_anomalous_ng) + accuracy_clean_ng * len(result_clean_ng)) / (len(result_clean_ng) + len(result_anomalous_ng))))
-
+    print("\nN-Gram Evaluation")
+    evaluate_detection(result_clean_ng, result_anomalous_ng)
 
     #Evaluate URL-Length
-    accuracy_anomalous_url_length = (float(np.count_nonzero(result_anomalous_url_length == -1))) / len(result_anomalous_url_length) * 100
-    accuracy_clean_url_length = (float(np.count_nonzero(result_clean_url_length == 1))) / len(result_clean_url_length) * 100
-
-    print("\nEvaluation using URL-Length:")
-    print("\nTrue Positive: %.4f %%" % accuracy_anomalous_url_length)
-    print("\nFalse Positive: %.4f %%" % (100 - accuracy_clean_url_length))
-    print("\nAccuracy: %.4f %%" % ((accuracy_anomalous_url_length * len(result_anomalous_url_length) + accuracy_clean_url_length * len(result_clean_url_length)) / (len(result_clean_url_length) + len(result_anomalous_url_length))))
-
+    print("\nURL Length Evaluation")
+    evaluate_detection(result_clean_url_length, result_anomalous_url_length)
+    
+    print("\n**************************")
     #overall evaluation
-    accuracy_anomalous_overall = (float(np.count_nonzero(result_overall_anomalous == -1))) / len(result_overall_anomalous) * 100
-    accuracy_clean_overall = (float(np.count_nonzero(result_overall_clean == 1))) / len(result_overall_clean) * 100
-
-    print("\nOverall Evaluation " + alg_name)
-    print("\nTrue Positive: %.4f %%" % accuracy_anomalous_overall)
-    print("\nFalse Positive: %.4f %%" % (100 - accuracy_clean_overall))
-    print("\nAccuracy: %.4f %%" % ((accuracy_anomalous_overall * len(result_overall_anomalous) + accuracy_clean_overall * len(result_overall_clean)) / (len(result_overall_clean) + len(result_overall_anomalous))))
-
-
+    print("Overall Evaluation " + alg_name.upper() + "\n")
+    evaluate_detection(result_overall_clean, result_overall_anomalous)
+    print()
 
 if __name__ == "__main__":
     main()

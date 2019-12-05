@@ -22,11 +22,7 @@ def __dbscan_predict(dbscan_model, X_new, metric=sp.spatial.distance.euclidean):
     return y_new
 
 def dbscan(training_vectors, clean_vectors, anomalous_vectors, eps=0.3, min_samples=3):
-    print("**************************")
     print("Starting DB-Scan Fitting...")
-    print("Training model:")
-    print("eps = %.2f" % eps)
-    print("minimum number of samples needed for a cluster: %.d" % min_samples)
 
     #Building the clustering model
     #eps is the radius of the cluster
@@ -39,13 +35,13 @@ def dbscan(training_vectors, clean_vectors, anomalous_vectors, eps=0.3, min_samp
     model = dbscan.fit(training_vectors)
 
     print("Training done! Switch to testing.")
-    print("**************************")
     print("Start prediction...")
 
     result_clean = __dbscan_predict(model, clean_vectors)
     result_anomalous = __dbscan_predict(model, anomalous_vectors)
 
     print("Predicting successful!")    
+    print("**************************")
 
     return result_clean, result_anomalous
 
