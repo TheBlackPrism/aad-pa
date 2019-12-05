@@ -122,6 +122,21 @@ def main():
     test_vectors_clean_url_length = ul.extract_feature(test_clean)
     test_vectors_anomalous_url_length = ul.extract_feature(test_anomalous)
 
+    #1-Grams Extraction
+    onegram_parameter = NGram(n=1)
+    onegram_parameter.fit(training_data,False)
+
+    onegram_url = NGram(n=1)
+    onegram_url.fit(training_data,True)
+
+    training_vectors_one_gram_paramteter, onegram_training_parameter = onegram_parameter.get_feature_vectors_multidimensional(training_data)
+    test_vectors_one_gram_clean_parameter, onegram_clean_parameter = onegram_parameter.get_feature_vectors_multidimensional(test_clean)
+    test_vectors_one_gram_anomalous_parameter, onegram_anomalous_parameter = onegram_parameter.get_feature_vectors_multidimensional(test_anomalous)
+
+    training_vectors_one_gram_url, onegram_training_url = onegram_url.get_feature_vectors_multidimensional(training_data)
+    test_vectors_one_gram_clean_url, onegram_clean_url = onegram_url.get_feature_vectors_multidimensional(test_clean)
+    test_vectors_one_gram_anomalous_url, onegram_anomalous_url = onegram_url.get_feature_vectors_multidimensional(test_anomalous)
+
     print('Feature extraction successful!')
     print("**************************")
     print("Analysing URL N-Grams:")
@@ -141,6 +156,13 @@ def main():
 
     result_clean_ng = ad.merge_results(result_clean_ng_param,result_clean_ng_url)
     result_anomalous_ng = ad.merge_results(result_anomalous_ng_param,result_anomalous_ng_url)
+
+    print("Analysing Parameter 1-Grams:")
+    result_clean_onegram_param,result_anomalous_onegram_param = ad.apply_algorithm(alg_name,training_vectors_one_gram_paramteter,test_vectors_one_gram_clean_parameter,test_vectors_one_gram_anomalous_parameter)
+    result_clean_onegram_url,result_anomalous_onegram_url = ad.apply_algorithm(alg_name,training_vectors_one_gram_url,test_vectors_one_gram_clean_url,test_vectors_one_gram_anomalous_url)
+
+    result_clean_onegram = ad.merge_results(result_clean_onegram_param,result_clean_onegram_url)
+    result_anomalous_onegram = ad.merge_results(result_anomalous_onegram_param,result_anomalous_onegram_url)
     
     print("Analysing URL Length:")
     result_clean_url_length,result_anomalous_url_length = ad.apply_algorithm(alg_name,training_vectors_url_length,test_vectors_clean_url_length,test_vectors_anomalous_url_length)
