@@ -139,7 +139,7 @@ def main():
 
     print('Feature extraction successful!')
     print("**************************")
-    print("Analysing URL N-Grams:")
+    
 
     
     #if alg_name == 'svm':
@@ -158,6 +158,7 @@ def main():
     # cannot form a cluster in svm
 
     if alg_name != 'svm':
+        print("Analysing URL N-Grams:")
         result_clean_ng_url,result_anomalous_ng_url = ad.apply_algorithm(alg_name,training_vectors_url,test_vectors_clean_url,test_vectors_anomalous_url)
 
         result_clean_ng = ad.merge_results(result_clean_ng_param,result_clean_ng_url)
