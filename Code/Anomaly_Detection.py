@@ -8,6 +8,7 @@ from URL_Length_Extraction import *
 from pathlib import Path
 import DBSCAN
 import os
+import K_Means_new
 
 class Anomaly_Detection():
     """description of class"""
@@ -44,6 +45,11 @@ class Anomaly_Detection():
         elif(alg_name == 'dbscan'):
             result_clean,result_anomalous = DBSCAN.dbscan(training_vectors,test_vectors_clean,test_vectors_anomalous)
 
+            return result_clean,result_anomalous
+        
+        elif(alg_name == 'kmeans'):
+            result_clean,result_anomalous = K_Means_new.k_means(training_vectors,test_vectors_clean,test_vectors_anomalous)
+            
             return result_clean,result_anomalous
 
         else:
@@ -86,7 +92,7 @@ def main():
 
     print("**************************")
     print('Please enter the algorithm you would like to use...')
-    print('lof = Local Outlier Detection\nsvm = One Class Support Vector Machine\ndbscan = DBSCAN')
+    print('lof = Local Outlier Detection\nsvm = One Class Support Vector Machine\ndbscan = DBSCAN\nkmeans = K-Means')
 
     alg_name = str(input('Algorithm: ')).lower()
 
