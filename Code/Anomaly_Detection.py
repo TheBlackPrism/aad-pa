@@ -141,12 +141,12 @@ def main():
     print("**************************")
     print("Analysing URL N-Grams:")
 
-    # Workaround that prevents svm applied to url as features are not spread in the url and points on the same place 
-    # cannot form a cluster in svm
+    """
     if alg_name == 'svm':
         url_alg = 'lof'
     else:
         url_alg = alg_name
+    """
 
     result_clean_ng_url,result_anomalous_ng_url = ad.apply_algorithm(url_alg,training_vectors_url,test_vectors_clean_url,test_vectors_anomalous_url)
     
@@ -163,30 +163,49 @@ def main():
 
     result_clean_onegram = ad.merge_results(result_clean_onegram_param,result_clean_onegram_url)
     result_anomalous_onegram = ad.merge_results(result_anomalous_onegram_param,result_anomalous_onegram_url)
+
+    # Workaround that prevents svm applied to url as features are not spread in the url and points on the same place 
+    # cannot form a cluster in svm
+    if alg_name != 'svm':
+
     
-    print("Analysing URL Length:")
-    result_clean_url_length,result_anomalous_url_length = ad.apply_algorithm(alg_name,training_vectors_url_length,test_vectors_clean_url_length,test_vectors_anomalous_url_length)
+        print("Analysing URL Length:")
+        result_clean_url_length,result_anomalous_url_length = ad.apply_algorithm(alg_name,training_vectors_url_length,test_vectors_clean_url_length,test_vectors_anomalous_url_length)
 
-    result_clean_onegram_ngram = ad.merge_results(result_clean_onegram,result_clean_ng)
-    result_anomalous_onegram_ngram = ad.merge_results(result_anomalous_onegram, result_anomalous_ng)
+        result_clean_onegram_ngram = ad.merge_results(result_clean_onegram,result_clean_ng)
+        result_anomalous_onegram_ngram = ad.merge_results(result_anomalous_onegram, result_anomalous_ng)
 
-    result_overall_clean = ad.merge_results(result_clean_onegram_ngram, result_clean_url_length)
-    result_overall_anomalous = ad.merge_results(result_anomalous_onegram_ngram,result_anomalous_url_length)
+        result_overall_clean = ad.merge_results(result_clean_onegram_ngram, result_clean_url_length)
+        result_overall_anomalous = ad.merge_results(result_anomalous_onegram_ngram,result_anomalous_url_length)
 
 
-    print('Starting evaluation...')
+        print('Starting evaluation...')
 
-    #Evaluate N-Grams
-    print("\nN-Gram Evaluation")
-    evaluate_detection(result_clean_ng, result_anomalous_ng)
+        #Evaluate N-Grams
+        print("\nN-Gram Evaluation")
+        evaluate_detection(result_clean_ng, result_anomalous_ng)
 
-    #Evaluate 1-Grams
-    print("\n1-Gram Evaluation")
-    evaluate_detection(result_clean_onegram, result_anomalous_onegram)
+        #Evaluate 1-Grams
+        print("\n1-Gram Evaluation")
+        evaluate_detection(result_clean_onegram, result_anomalous_onegram)
 
-    #Evaluate URL-Length
-    print("\nURL Length Evaluation")
-    evaluate_detection(result_clean_url_length, result_anomalous_url_length)
+        #Evaluate URL-Length
+        print("\nURL Length Evaluation")
+        evaluate_detection(result_clean_url_length, result_anomalous_url_length)
+
+    else:
+        result_overall_clean = ad.merge_results(result_clean_onegram,result_clean_ng)
+        result_overall_anomalous = ad.merge_results(result_anomalous_onegram,result_anomalous_ng)
+
+        print('Starting evaluation...')
+
+        #Evaluate N-Grams
+        print("\nN-Gram Evaluation")
+        evaluate_detection(result_clean_ng, result_anomalous_ng)
+
+        #Evaluate 1-Grams
+        print("\n1-Gram Evaluation")
+        evaluate_detection(result_clean_onegram, result_anomalous_onegram)
 
     
     print("\n**************************")
