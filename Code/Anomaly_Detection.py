@@ -167,8 +167,11 @@ def main():
     print("Analysing URL Length:")
     result_clean_url_length,result_anomalous_url_length = ad.apply_algorithm(alg_name,training_vectors_url_length,test_vectors_clean_url_length,test_vectors_anomalous_url_length)
 
-    result_overall_clean = ad.merge_results(result_clean_ng, result_clean_url_length)
-    result_overall_anomalous = ad.merge_results(result_anomalous_ng,result_anomalous_url_length)
+    result_clean_onegram_ngram = ad.merge_results(result_clean_onegram,result_clean_ng)
+    result_anomalous_onegram_ngram = ad.merge_results(result_anomalous_onegram, result_anomalous_ng)
+
+    result_overall_clean = ad.merge_results(result_clean_onegram_ngram, result_clean_url_length)
+    result_overall_anomalous = ad.merge_results(result_anomalous_onegram_ngram,result_anomalous_url_length)
 
 
     print('Starting evaluation...')
@@ -177,9 +180,14 @@ def main():
     print("\nN-Gram Evaluation")
     evaluate_detection(result_clean_ng, result_anomalous_ng)
 
+    #Evaluate 1-Grams
+    print("\n1-Gram Evaluation")
+    evaluate_detection(result_clean_onegram, result_anomalous_onegram)
+
     #Evaluate URL-Length
     print("\nURL Length Evaluation")
     evaluate_detection(result_clean_url_length, result_anomalous_url_length)
+
     
     print("\n**************************")
     #overall evaluation
