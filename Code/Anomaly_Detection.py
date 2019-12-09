@@ -61,6 +61,10 @@ class Anomaly_Detection():
         If an entry in one of the lists is -1 the according result entry will be -1 too
         """
         result = []
+
+        if len(list1) != len(list2):
+            raise NameError('Result to merge do not match in length')
+
         for i in range(len(list1)):
             if list1[i] == -1 or list2[i] == -1:
                 result.append(-1)
@@ -72,6 +76,9 @@ class Anomaly_Detection():
 def evaluate_detection(result_clean, result_anomalous):
     """Evaluates the detection rate of a model and prints it
     """
+    result_clean = np.asarray(result_clean)       
+    result_anomalous = np.asarray(result_anomalous)
+
     accuracy_anomalous = (float(np.count_nonzero(result_anomalous == -1))) / len(result_anomalous) * 100
     accuracy_clean = (float(np.count_nonzero(result_clean == 1))) / len(result_clean) * 100
 
