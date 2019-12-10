@@ -36,22 +36,28 @@ class Anomaly_Detection():
         """
         if scaler_name == None or scaler_name == 'none':
             return training_vectors, test_vectors_clean, test_vectors_anomalous
+
         elif scaler_name == 'minmax':
-            training_vectors_scaled = pp.minmax_scale(training_vectors)
-            test_vectors_clean_scaled = pp.minmax_scale(test_vectors_clean)
-            test_vectors_anomalous_scaled = pp.minmax_scale(test_vectors_anomalous)
+            scaler = pp.MinMaxScaler()
+
         elif scaler_name == 'standard':
             scaler = pp.StandardScaler()
-            training_vectors_scaled = scaler.fit_transform(training_vectors)
-            test_vectors_clean_scaled = scaler.transform(test_vectors_clean)
-            test_vectors_anomalous_scaled = scaler.transform(test_vectors_anomalous)
+
         elif scaler_name == 'robust':
             scaler = pp.RobustScaler()
-            training_vectors_scaled = scaler.fit_transform(training_vectors)
-            test_vectors_clean_scaled = scaler.transform(test_vectors_clean)
-            test_vectors_anomalous_scaled = scaler.transform(test_vectors_anomalous)
+
+        elif scaler_name == 'power':
+            scaler = pp.PowerTransformer()
+
+        elif scaler_name == 'quantile':
+            scaler = pp.QuantileTransformer()
+
         else:
             raise NameError("Invalid Scaler Name")
+        
+        training_vectors_scaled = scaler.fit_transform(training_vectors)
+        test_vectors_clean_scaled = scaler.transform(test_vectors_clean)
+        test_vectors_anomalous_scaled = scaler.transform(test_vectors_anomalous)
 
         return training_vectors_scaled, test_vectors_clean_scaled, test_vectors_anomalous_scaled
 
@@ -127,7 +133,7 @@ def main():
 
     print("**************************")
     print('Please enter the scaler you would like to use...')
-    print('none\nminmax\nstandard\nrobust')
+    print('none\nminmax\nstandard\nrobust\npower\nquantile')
 
     scaler_name = str(input('Scaler: ')).lower()
 
