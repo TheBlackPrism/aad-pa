@@ -32,6 +32,8 @@ class Anomaly_Detection():
         return training_data, test_clean, test_anomalous
 
     def apply_scaler(self, scaler_name, training_vectors, test_vectors_clean, test_vectors_anomalous):
+        """Applies the specified scaler onto the feature sets.
+        """
         if scaler_name == None or scaler_name == 'none':
             return training_vectors, test_vectors_clean, test_vectors_anomalous
         elif scaler_name == 'minmax':
@@ -54,6 +56,8 @@ class Anomaly_Detection():
         return training_vectors_scaled, test_vectors_clean_scaled, test_vectors_anomalous_scaled
 
     def apply_algorithm(self, alg_name, training_vectors, test_vectors_clean, test_vectors_anomalous):
+        """Applies the specified algorithm onto the feature sets.
+        """
         if alg_name == 'lof':
             result_clean, result_anomalous = outlier.local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous)
 
