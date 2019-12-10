@@ -37,7 +37,7 @@ class URL_Length_Extraction(object):
             feature_vector.append(lengths.copy())
             lengths.clear()
 
-        return feature_vector
+        return np.asarray(feature_vector)
 
     def extract_feature(self,data):
         data_urls = self.get_urls(data)
