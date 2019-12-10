@@ -34,7 +34,7 @@ class Anomaly_Detection():
     def apply_scaler(self, scaler_name, training_vectors, test_vectors_clean, test_vectors_anomalous):
         """Applies the specified scaler onto the feature sets.
         """
-        if scaler_name == None or scaler_name == 'none':
+        if scaler_name == '' or scaler_name == 'none':
             return training_vectors, test_vectors_clean, test_vectors_anomalous
 
         elif scaler_name == 'minmax':
@@ -238,7 +238,7 @@ def main():
 
     print('Starting evaluation...')
     
-    print("Scaler: " + scaler_name)
+    print("Scaler: " + scaler_name.capitalize())
     print("Anomalous Samples: %d" % len(result_overall_anomalous))
     print("Clean Samples: %d\n" % len(result_overall_clean))
 
