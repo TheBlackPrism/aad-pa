@@ -123,7 +123,7 @@ def main():
 
     print("**************************")
     print('Please enter the scaler you would like to use...')
-    print('none\nminimax\nstandard\nrobust')
+    print('none\nminmax\nstandard\nrobust')
 
     scaler_name = str(input('Scaler: ')).lower()
 
