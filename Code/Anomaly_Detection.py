@@ -9,6 +9,7 @@ from pathlib import Path
 import DBSCAN
 import os
 import K_Means_new
+import sklearn.preprocessing as pp
 
 class Anomaly_Detection():
     """description of class"""
@@ -17,7 +18,7 @@ class Anomaly_Detection():
 
     def reading_data_from_file(self,path):
         
-        if(path == ''):
+        if path == '':
             print('Invalid path name. Please enter valid path...')
             return
         training_data = parser.read_data(path / "normalTrafficTraining")
@@ -30,31 +31,51 @@ class Anomaly_Detection():
 
         return training_data, test_clean, test_anomalous
 
+    def apply_scaler(self, scaler_name, training_vectors, test_vectors_clean, test_vectors_anomalous):
+        if scaler_name == None or scaler_name == 'none':
+            return training_vectors, test_vectors_clean, test_vectors_anomalous
+        elif scaler_name == 'minmax':
+            training_vectors_scaled = pp.minmax_scale(training_vectors)
+            test_vectors_clean_scaled = pp.minmax_scale(test_vectors_clean)
+            test_vectors_anomalous_scaled = pp.minmax_scale(test_vectors_anomalous)
+        elif scaler_name == 'standard':
+            scaler = pp.StandardScaler()
+            training_vectors_scaled = scaler.fit_transform(training_vectors)
+            test_vectors_clean_scaled = scaler.transform(test_vectors_clean)
+            test_vectors_anomalous_scaled = scaler.transform(test_vectors_anomalous)
+        elif scaler_name == 'robust':
+            scaler = pp.RobustScaler()
+            training_vectors_scaled = scaler.fit_transform(training_vectors)
+            test_vectors_clean_scaled = scaler.transform(test_vectors_clean)
+            test_vectors_anomalous_scaled = scaler.transform(test_vectors_anomalous)
+        else:
+            raise NameError("Invalid Scaler Name")
+
+        return training_vectors_scaled, test_vectors_clean_scaled, test_vectors_anomalous_scaled
 
     def apply_algorithm(self, alg_name, training_vectors, test_vectors_clean, test_vectors_anomalous):
-        if(alg_name == 'lof'):
+        if alg_name == 'lof':
             result_clean, result_anomalous = outlier.local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous)
 
             return result_clean, result_anomalous
 
-        elif(alg_name == 'svm'):
+        elif alg_name == 'svm':
             result_clean, result_anomalous = outlier.one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous)
 
             return result_clean, result_anomalous
 
-        elif(alg_name == 'dbscan'):
+        elif alg_name == 'dbscan':
             result_clean,result_anomalous = DBSCAN.dbscan(training_vectors,test_vectors_clean,test_vectors_anomalous)
 
             return result_clean,result_anomalous
         
-        elif(alg_name == 'kmeans'):
+        elif alg_name == 'kmeans':
             result_clean,result_anomalous = K_Means_new.k_means(training_vectors,test_vectors_clean,test_vectors_anomalous)
             
             return result_clean,result_anomalous
 
         else:
-            print('Algorithm Name not found.')
-            return
+            raise NameError("Invalid Algorithm Name")
 
     def merge_results(self,list1, list2):
         """Merges two result lists into one.
@@ -82,9 +103,6 @@ def evaluate_detection(result_clean, result_anomalous):
     accuracy_anomalous = (float(np.count_nonzero(result_anomalous == -1))) / len(result_anomalous) * 100
     accuracy_clean = (float(np.count_nonzero(result_clean == 1))) / len(result_clean) * 100
 
-    print("Anomalous Samples: %d" % len(result_anomalous))
-    print("Clean Samples: %d\n" % len(result_clean))
-
     print("True Positive: %.2f%%" % accuracy_anomalous)
     print("False Positive: %.2f%%" % (100 - accuracy_clean))
 
@@ -102,6 +120,12 @@ def main():
     print('lof = Local Outlier Detection\nsvm = One Class Support Vector Machine\ndbscan = DBSCAN\nkmeans = K-Means')
 
     alg_name = str(input('Algorithm: ')).lower()
+
+    print("**************************")
+    print('Please enter the scaler you would like to use...')
+    print('none\nminimax\nstandard\nrobust')
+
+    scaler_name = str(input('Scaler: ')).lower()
 
     print("**************************")
     print('Reading data...')
@@ -160,10 +184,15 @@ def main():
 
     #else:
        # url_alg = alg_name
-    
-    
-    
-    
+
+       
+    print("Applying Scaler...")
+    training_vectors_one_gram_paramteter, test_vectors_one_gram_clean_parameter, test_vectors_one_gram_anomalous_parameter = ad.apply_scaler(scaler_name, training_vectors_one_gram_paramteter, test_vectors_one_gram_clean_parameter, test_vectors_one_gram_anomalous_parameter)
+    training_vectors_one_gram_url, test_vectors_one_gram_clean_url, test_vectors_one_gram_anomalous_url = ad.apply_scaler(scaler_name, training_vectors_one_gram_url, test_vectors_one_gram_clean_url, test_vectors_one_gram_anomalous_url)
+    training_vectors_url_length, test_vectors_clean_url_length, test_vectors_anomalous_url_length = ad.apply_scaler(scaler_name, training_vectors_url_length, test_vectors_clean_url_length, test_vectors_anomalous_url_length)
+    training_vectors_parameter, test_vectors_clean_parameter, test_vectors_anomalous_parameter = ad.apply_scaler(scaler_name, training_vectors_parameter, test_vectors_clean_parameter, test_vectors_anomalous_parameter)
+    training_vectors_url, test_vectors_clean_url, test_vectors_anomalous_url = ad.apply_scaler(scaler_name, training_vectors_url,test_vectors_clean_url,test_vectors_anomalous_url)
+
     print("Analysing Parameter N-Grams:")
     result_clean_ng_param,result_anomalous_ng_param = ad.apply_algorithm(alg_name,training_vectors_parameter,test_vectors_clean_parameter,test_vectors_anomalous_parameter)
 
@@ -198,6 +227,10 @@ def main():
 
 
     print('Starting evaluation...')
+    
+    print("Scaler: " + scaler_name)
+    print("Anomalous Samples: %d" % len(result_overall_anomalous))
+    print("Clean Samples: %d\n" % len(result_overall_clean))
 
     #Evaluate N-Grams
     print("\nN-Gram Evaluation")
@@ -214,7 +247,7 @@ def main():
     
     print("\n**************************")
     #overall evaluation
-    print("Overall Evaluation " + alg_name.upper() + "\n")
+    print("Overall Evaluation " + alg_name.upper())
     evaluate_detection(result_overall_clean, result_overall_anomalous)
     print()
 
