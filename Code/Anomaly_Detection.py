@@ -171,10 +171,10 @@ def main():
 
     #1-Grams Extraction
     onegram_parameter = NGram()
-    onegram_parameter.fit(training_data,False,n=1)
+    onegram_parameter.fit(training_data,False,1,False)
 
     onegram_url = NGram()
-    onegram_url.fit(training_data,True,n=1)
+    onegram_url.fit(training_data,True,1,False)
 
     training_vectors_one_gram_paramteter, onegram_training_parameter = onegram_parameter.get_feature_vectors_multidimensional(training_data)
     test_vectors_one_gram_clean_parameter, onegram_clean_parameter = onegram_parameter.get_feature_vectors_multidimensional(test_clean)
@@ -195,13 +195,12 @@ def main():
     #else:
        # url_alg = alg_name
 
-       
     print("Applying Scaler...")
     training_vectors_one_gram_paramteter, test_vectors_one_gram_clean_parameter, test_vectors_one_gram_anomalous_parameter = ad.apply_scaler(scaler_name, training_vectors_one_gram_paramteter, test_vectors_one_gram_clean_parameter, test_vectors_one_gram_anomalous_parameter)
     training_vectors_one_gram_url, test_vectors_one_gram_clean_url, test_vectors_one_gram_anomalous_url = ad.apply_scaler(scaler_name, training_vectors_one_gram_url, test_vectors_one_gram_clean_url, test_vectors_one_gram_anomalous_url)
     training_vectors_url_length, test_vectors_clean_url_length, test_vectors_anomalous_url_length = ad.apply_scaler(scaler_name, training_vectors_url_length, test_vectors_clean_url_length, test_vectors_anomalous_url_length)
     training_vectors_parameter, test_vectors_clean_parameter, test_vectors_anomalous_parameter = ad.apply_scaler(scaler_name, training_vectors_parameter, test_vectors_clean_parameter, test_vectors_anomalous_parameter)
-    training_vectors_url, test_vectors_clean_url, test_vectors_anomalous_url = ad.apply_scaler(scaler_name, training_vectors_url,test_vectors_clean_url,test_vectors_anomalous_url)
+    training_vectors_url, test_vectors_clean_url, test_vectors_anomalous_url = ad.apply_scaler(scaler_name, training_vectors_url, test_vectors_clean_url, test_vectors_anomalous_url)
 
     print("Analysing Parameter N-Grams:")
     result_clean_ng_param,result_anomalous_ng_param = ad.apply_algorithm(alg_name,training_vectors_parameter,test_vectors_clean_parameter,test_vectors_anomalous_parameter)
@@ -235,12 +234,13 @@ def main():
     result_overall_clean = ad.merge_results(result_clean_onegram_ngram, result_clean_url_length)
     result_overall_anomalous = ad.merge_results(result_anomalous_onegram_ngram,result_anomalous_url_length)
 
+    #parser.write_csv("One Grams.txt", onegram_parameter.ngrams, test_vectors_one_gram_clean_parameter)
 
     print('Starting evaluation...')
     
     print("Scaler: " + scaler_name.capitalize())
     print("Anomalous Samples: %d" % len(result_overall_anomalous))
-    print("Clean Samples: %d\n" % len(result_overall_clean))
+    print("Clean Samples: %d" % len(result_overall_clean))
 
     #Evaluate N-Grams
     print("\nN-Gram Evaluation")
