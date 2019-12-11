@@ -15,11 +15,12 @@ class NGram():
         self.ngrams_probability = {}
         self.is_url = False
 
-    def fit(self, data, is_url, n = 2):
+    def fit(self, data, is_url, n = 2, normalize = True):
         """Reads a set of requests and stores probabilities and occurences in the class
         """
         self.is_url = is_url
         self.n = n
+        self.normalize = normalize
 
         self.ngrams = self.get_ngrams_for_all(data)
         self.total_number_ngrams = sum(self.ngrams.values())
@@ -128,14 +129,18 @@ class NGram():
     def normalize_request(self, request):
         """Normalizes a request by replacing all alphabet characters with a and numeric characters with 1
         """
-        regex = re.compile(r"[a-zA-Z]")
-        replaced = re.sub(regex, 'a',request)
-        regex = re.compile(r"[0-9]")
-        replaced = re.sub(regex, '1',replaced)
-        if self.is_url:
-            replaced = extract_url(replaced)
+        if self.normalize:
+            regex = re.compile(r"[a-zA-Z]")
+            replaced = re.sub(regex, 'a',request)
+            regex = re.compile(r"[0-9]")
+            replaced = re.sub(regex, '1',replaced)
+
         else:
-            replaced = extract_parameter(replaced)
+            replaced = request.lower()
+            if self.is_url:
+                replaced = extract_url(replaced)
+            else:
+                replaced = extract_parameter(replaced)
         return replaced
 
 def extract_parameter(request):
