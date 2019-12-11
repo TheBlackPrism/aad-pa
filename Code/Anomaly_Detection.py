@@ -122,8 +122,8 @@ def main():
     print('Please enter name of the dataset...')
     path = '../Logfiles/'
     print(os.listdir(path))
-    path += str(input('Logfiles/'))
-    path = Path(path)
+    dataset = str(input('Logfiles/'))
+    path = Path(path + dataset)
 
     print("**************************")
     print('Please enter the algorithm you would like to use...')
@@ -234,10 +234,12 @@ def main():
     result_overall_clean = ad.merge_results(result_clean_onegram_ngram, result_clean_url_length)
     result_overall_anomalous = ad.merge_results(result_anomalous_onegram_ngram,result_anomalous_url_length)
 
-    #parser.write_csv("One Grams.txt", onegram_parameter.ngrams, test_vectors_one_gram_clean_parameter)
+    # parser.write_csv("One Grams.csv", onegram_parameter.ngrams, test_vectors_one_gram_clean_parameter)
 
     print('Starting evaluation...')
     
+    print("Dataset: " + dataset)
+    print("Algorithm: " + alg_name.upper())
     print("Scaler: " + scaler_name.capitalize())
     print("Anomalous Samples: %d" % len(result_overall_anomalous))
     print("Clean Samples: %d" % len(result_overall_clean))
@@ -255,9 +257,9 @@ def main():
     evaluate_detection(result_clean_url_length, result_anomalous_url_length)
 
     
-    print("\n**************************")
+    print("**************************")
     #overall evaluation
-    print("Overall Evaluation " + alg_name.upper())
+    print("Overall Evaluation")
     evaluate_detection(result_overall_clean, result_overall_anomalous)
     print()
 
