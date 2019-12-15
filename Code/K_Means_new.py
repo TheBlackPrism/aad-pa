@@ -75,7 +75,8 @@ def k_means(training_vectors,test_vectors_clean, test_vectors_anomalous):
 
     #could_not_be_assigned_clean_test_vector = [] #would be bad. The vectors should belong to a cluster
     #could_be_assigned_clean_test_vector = [] #would be good. The vectors should belong to a cluster
-    result_clean = []
+    result_clean = []    
+    result_training = []
 
     r0 = clusters_radii[0]
     c0 = centroids[0]
@@ -111,7 +112,25 @@ def k_means(training_vectors,test_vectors_clean, test_vectors_anomalous):
         dist1 = 0
         dist2 = 0
 
+    dist0 = 0
+    dist1 = 0
+    dist2 = 0
+    for i in range(len(training_vectors)):
 
+        dist0 = np.linalg.norm(c0-training_vectors[i])
+        dist1 = np.linalg.norm(c1-training_vectors[i])
+        dist2 = np.linalg.norm(c2-training_vectors[i])
+        if dist0 <= r0 or dist1 <= r1 or dist2 <= r2:
+            result_training.append(1)
+        else:
+            #result_clean.append(test_vectors_clean[i])
+            result_training.append(-1)
+            
+
+   
+        dist0 = 0
+        dist1 = 0
+        dist2 = 0
 
     #detected_anomalies_in_anomalous_test_vector = [] #would be good. The vectors shouldn't belong to any cluster
     #undetected_anomalies_in_anomalous_test_vector = [] #would be bad. The vectors shouldn't belong to any cluster
@@ -143,5 +162,5 @@ def k_means(training_vectors,test_vectors_clean, test_vectors_anomalous):
     print("Predicting successful!")    
     print("**************************")
     
-    return result_clean,result_anomalous
+    return np.asarray(result_clean), np.asarray(result_anomalous), np.asarray(result_training)
     

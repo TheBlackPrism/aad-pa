@@ -65,27 +65,21 @@ class Anomaly_Detection():
         """Applies the specified algorithm onto the feature sets.
         """
         if alg_name == 'lof':
-            result_clean, result_anomalous = outlier.local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous)
-
-            return result_clean, result_anomalous
+            result_clean, result_anomalous, result_training = outlier.local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous)
 
         elif alg_name == 'svm':
-            result_clean, result_anomalous = outlier.one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous)
-
-            return result_clean, result_anomalous
+            result_clean, result_anomalous, result_training = outlier.one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous)
 
         elif alg_name == 'dbscan':
-            result_clean,result_anomalous = DBSCAN.dbscan(training_vectors,test_vectors_clean,test_vectors_anomalous)
-
-            return result_clean,result_anomalous
+            result_clean,result_anomalous, result_training = DBSCAN.dbscan(training_vectors,test_vectors_clean,test_vectors_anomalous)
         
         elif alg_name == 'kmeans':
-            result_clean,result_anomalous = K_Means_new.k_means(training_vectors,test_vectors_clean,test_vectors_anomalous)
-            
-            return result_clean,result_anomalous
+            result_clean,result_anomalous, result_training = K_Means_new.k_means(training_vectors,test_vectors_clean,test_vectors_anomalous)
 
         else:
             raise NameError("Invalid Algorithm Name")
+        
+        return result_clean,result_anomalous, result_training
 
     def merge_results(self,list1, list2):
         """Merges two result lists into one.
@@ -104,15 +98,18 @@ class Anomaly_Detection():
 
         return np.asarray(result)  
 
-def evaluate_detection(result_clean, result_anomalous):
+def evaluate_detection(result_clean, result_anomalous, result_training = np.array([])):
     """Evaluates the detection rate of a model and prints it
     """
     result_clean = np.asarray(result_clean)       
     result_anomalous = np.asarray(result_anomalous)
+    if len(result_training) > 0:
+        accuracy_training = (float(np.count_nonzero(result_training == 1))) / len(result_training) * 100
+        print("Trainingset Accuracy: %.2f%%" % accuracy_training)
 
     accuracy_anomalous = (float(np.count_nonzero(result_anomalous == -1))) / len(result_anomalous) * 100
     accuracy_clean = (float(np.count_nonzero(result_clean == 1))) / len(result_clean) * 100
-
+    
     print("True Positive: %.2f%%" % accuracy_anomalous)
     print("False Positive: %.2f%%" % (100 - accuracy_clean))
 
@@ -203,34 +200,39 @@ def main():
     training_vectors_url, test_vectors_clean_url, test_vectors_anomalous_url = ad.apply_scaler(scaler_name, training_vectors_url, test_vectors_clean_url, test_vectors_anomalous_url)
 
     print("Analysing Parameter N-Grams:")
-    result_clean_ng_param,result_anomalous_ng_param = ad.apply_algorithm(alg_name,training_vectors_parameter,test_vectors_clean_parameter,test_vectors_anomalous_parameter)
+    result_clean_ng_param,result_anomalous_ng_param,result_training_ng_param = ad.apply_algorithm(alg_name,training_vectors_parameter,test_vectors_clean_parameter,test_vectors_anomalous_parameter)
 
     # Workaround that prevents svm applied to url as features are not spread in the url and points on the same place 
     # cannot form a cluster in svm
 
     if alg_name != 'svm':
         print("Analysing URL N-Grams:")
-        result_clean_ng_url,result_anomalous_ng_url = ad.apply_algorithm(alg_name,training_vectors_url,test_vectors_clean_url,test_vectors_anomalous_url)
-
+        result_clean_ng_url,result_anomalous_ng_url, result_training_ng_url = ad.apply_algorithm(alg_name,training_vectors_url,test_vectors_clean_url,test_vectors_anomalous_url)
+        
+        result_training_ng = ad.merge_results(result_training_ng_param,result_training_ng_url)
         result_clean_ng = ad.merge_results(result_clean_ng_param,result_clean_ng_url)
         result_anomalous_ng = ad.merge_results(result_anomalous_ng_param,result_anomalous_ng_url)
     else:
+        result_training_ng = result_training_ng_param
         result_clean_ng = result_clean_ng_param
         result_anomalous_ng = result_anomalous_ng_param
 
     print("Analysing Parameter 1-Grams:")
-    result_clean_onegram_param,result_anomalous_onegram_param = ad.apply_algorithm(alg_name,training_vectors_one_gram_paramteter,test_vectors_one_gram_clean_parameter,test_vectors_one_gram_anomalous_parameter)
-    result_clean_onegram_url,result_anomalous_onegram_url = ad.apply_algorithm(alg_name,training_vectors_one_gram_url,test_vectors_one_gram_clean_url,test_vectors_one_gram_anomalous_url)
-
+    result_clean_onegram_param,result_anomalous_onegram_param,result_training_onegram_param = ad.apply_algorithm(alg_name,training_vectors_one_gram_paramteter,test_vectors_one_gram_clean_parameter,test_vectors_one_gram_anomalous_parameter)
+    result_clean_onegram_url,result_anomalous_onegram_url,result_training_onegram_url = ad.apply_algorithm(alg_name,training_vectors_one_gram_url,test_vectors_one_gram_clean_url,test_vectors_one_gram_anomalous_url)
+    
+    result_training_onegram = ad.merge_results(result_training_onegram_param,result_training_onegram_url)
     result_clean_onegram = ad.merge_results(result_clean_onegram_param,result_clean_onegram_url)
     result_anomalous_onegram = ad.merge_results(result_anomalous_onegram_param,result_anomalous_onegram_url)
     
     print("Analysing URL Length:")
-    result_clean_url_length,result_anomalous_url_length = ad.apply_algorithm(alg_name,training_vectors_url_length,test_vectors_clean_url_length,test_vectors_anomalous_url_length)
-
-    result_clean_onegram_ngram = ad.merge_results(result_clean_onegram,result_clean_ng)
+    result_clean_url_length,result_anomalous_url_length,result_training_url_length = ad.apply_algorithm(alg_name,training_vectors_url_length,test_vectors_clean_url_length,test_vectors_anomalous_url_length)
+    
+    result_training_onegram_ngram = ad.merge_results(result_training_ng, result_training_ng)
+    result_clean_onegram_ngram = ad.merge_results(result_clean_onegram, result_clean_ng)
     result_anomalous_onegram_ngram = ad.merge_results(result_anomalous_onegram, result_anomalous_ng)
-
+    
+    result_overall_training = ad.merge_results(result_training_onegram_ngram, result_training_url_length)
     result_overall_clean = ad.merge_results(result_clean_onegram_ngram, result_clean_url_length)
     result_overall_anomalous = ad.merge_results(result_anomalous_onegram_ngram,result_anomalous_url_length)
 
@@ -246,15 +248,15 @@ def main():
 
     #Evaluate N-Grams
     print("\nN-Gram Evaluation")
-    evaluate_detection(result_clean_ng, result_anomalous_ng)
+    evaluate_detection(result_clean_ng, result_anomalous_ng, result_training_ng)
     
     #Evaluate 1-Grams
     print("\n1-Gram Evaluation")
-    evaluate_detection(result_clean_onegram, result_anomalous_onegram)
+    evaluate_detection(result_clean_onegram, result_anomalous_onegram, result_training_onegram)
 
     #Evaluate URL-Length
     print("\nURL Length Evaluation")
-    evaluate_detection(result_clean_url_length, result_anomalous_url_length)
+    evaluate_detection(result_clean_url_length, result_anomalous_url_length, result_training_url_length)
 
     
     print("**************************")
