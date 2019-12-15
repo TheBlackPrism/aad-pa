@@ -262,7 +262,7 @@ def main():
     print("**************************")
     #overall evaluation
     print("Overall Evaluation")
-    evaluate_detection(result_overall_clean, result_overall_anomalous, result_overall_training)
+    evaluate_detection(result_overall_clean, result_overall_anomalous)
     print()
 
 if __name__ == "__main__":
