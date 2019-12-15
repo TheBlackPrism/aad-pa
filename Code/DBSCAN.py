@@ -36,14 +36,15 @@ def dbscan(training_vectors, clean_vectors, anomalous_vectors, eps=0.3, min_samp
 
     print("Training done! Switch to testing.")
     print("Start prediction...")
-
+    
+    result_training = __dbscan_predict(model, training_vectors)
     result_clean = __dbscan_predict(model, clean_vectors)
     result_anomalous = __dbscan_predict(model, anomalous_vectors)
 
     print("Predicting successful!")    
     print("**************************")
 
-    return result_clean, result_anomalous
+    return result_clean, result_anomalous, result_training
 
 def main():
     print("**************************")
