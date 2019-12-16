@@ -15,8 +15,8 @@ def __dbscan_predict(dbscan_model, X_new, metric=sp.spatial.distance.euclidean):
         # Find a core sample closer than EPS
         for i, x_core in enumerate(dbscan_model.components_):
             if metric(x_new, x_core) < dbscan_model.eps:
-                # Assign label of x_core to x_new
-                y_new[j] = dbscan_model.labels_[dbscan_model.core_sample_indices_[i]]
+                # Assign clean label to y_new
+                y_new[j] = 1
                 break
 
     return y_new
