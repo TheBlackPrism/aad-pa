@@ -28,6 +28,8 @@ def dbscan(training_vectors, clean_vectors, anomalous_vectors, eps=0.3, min_samp
     Both parameters must be chosen carefully, depending on the dataset.
     """
     dbscan = DBSCAN(eps = eps, min_samples=min_samples)
+
+    print("Fitting with Parameters: ", dbscan.get_params())
     model = dbscan.fit(training_vectors)
 
     print("Training done! Switch to testing.")

@@ -7,6 +7,8 @@ def k_means(training_vectors,test_vectors_clean, test_vectors_anomalous):
                 n_init=10, max_iter=300, 
                 tol=1e-04, random_state=0
                 )
+
+    print("Fitting with Parameters: ", kmeans.get_params())
     clusters = kmeans.fit_predict(training_vectors)
     centroids = kmeans.cluster_centers_
     labels = kmeans.labels_
