@@ -116,6 +116,10 @@ class Anomaly_Detection():
         """
         result_clean = np.asarray(result_clean)       
         result_anomalous = np.asarray(result_anomalous)
+
+        if np.count_nonzero(result_training > 1) > 0 or np.count_nonzero(result_clean > 1) > 0 or np.count_nonzero(result_anomalous == -1) > 0:
+            raise NameError("Unexpected Result in evaluation (At least one result is greater than 1)")
+
         if len(result_training) > 0:
             accuracy_training = (float(np.count_nonzero(result_training == 1))) / len(result_training) * 100
             print("Trainingset Accuracy: %.2f%%" % accuracy_training)
