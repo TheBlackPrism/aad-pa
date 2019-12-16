@@ -161,4 +161,3 @@ def read_csv(url, unnecessary_columns = 0):
         feature = np.asarray(list(tuple.values()))
         features.append(list(map(float, feature[:-unnecessary_columns]))) 
     return np.asarray(features)
-

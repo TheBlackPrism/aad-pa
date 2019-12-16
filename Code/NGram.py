@@ -1,9 +1,5 @@
 import re
 import numpy as np
-import matplotlib as matplot
-import matplotlib.pyplot as plt
-import logfileparser as parser
-import outlier
 import pandas as pd
 
 class NGram():
