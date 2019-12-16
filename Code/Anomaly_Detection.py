@@ -111,20 +111,20 @@ class Anomaly_Detection():
                 f.write("\n")
         f.close()
 
-def evaluate_detection(result_clean, result_anomalous, result_training = np.array([])):
-    """Evaluates the detection rate of a model and prints it
-    """
-    result_clean = np.asarray(result_clean)       
-    result_anomalous = np.asarray(result_anomalous)
-    if len(result_training) > 0:
-        accuracy_training = (float(np.count_nonzero(result_training == 1))) / len(result_training) * 100
-        print("Trainingset Accuracy: %.2f%%" % accuracy_training)
+    def evaluate_detection(self, result_clean, result_anomalous, result_training = np.array([])):
+        """Evaluates the detection rate of a model and prints it
+        """
+        result_clean = np.asarray(result_clean)       
+        result_anomalous = np.asarray(result_anomalous)
+        if len(result_training) > 0:
+            accuracy_training = (float(np.count_nonzero(result_training == 1))) / len(result_training) * 100
+            print("Trainingset Accuracy: %.2f%%" % accuracy_training)
 
-    accuracy_anomalous = (float(np.count_nonzero(result_anomalous == -1))) / len(result_anomalous) * 100
-    accuracy_clean = (float(np.count_nonzero(result_clean == 1))) / len(result_clean) * 100
+        accuracy_anomalous = (float(np.count_nonzero(result_anomalous == -1))) / len(result_anomalous) * 100
+        accuracy_clean = (float(np.count_nonzero(result_clean == 1))) / len(result_clean) * 100
     
-    print("True Positive: %.2f%%" % accuracy_anomalous)
-    print("False Positive: %.2f%%" % (100 - accuracy_clean))
+        print("True Positive: %.2f%%" % accuracy_anomalous)
+        print("False Positive: %.2f%%" % (100 - accuracy_clean))
 
 
 def main():
@@ -262,21 +262,21 @@ def main():
 
     #Evaluate N-Grams
     print("\nN-Gram Evaluation")
-    evaluate_detection(result_clean_ng, result_anomalous_ng, result_training_ng)
+    ad.evaluate_detection(result_clean_ng, result_anomalous_ng, result_training_ng)
     
     #Evaluate 1-Grams
     print("\n1-Gram Evaluation")
-    evaluate_detection(result_clean_onegram, result_anomalous_onegram, result_training_onegram)
+    ad.evaluate_detection(result_clean_onegram, result_anomalous_onegram, result_training_onegram)
 
     #Evaluate URL-Length
     print("\nURL Length Evaluation")
-    evaluate_detection(result_clean_url_length, result_anomalous_url_length, result_training_url_length)
+    ad.evaluate_detection(result_clean_url_length, result_anomalous_url_length, result_training_url_length)
 
     
     print("**************************")
     #overall evaluation
     print("Overall Evaluation")
-    evaluate_detection(result_overall_clean, result_overall_anomalous)
+    ad.evaluate_detection(result_overall_clean, result_overall_anomalous)
     print()
 
     # The Following two method calls can be used to analyse wrong identified requests in this examples only from the N-Grams
