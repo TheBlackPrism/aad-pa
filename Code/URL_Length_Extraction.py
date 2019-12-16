@@ -1,7 +1,4 @@
-import logfileparser as parser
 import numpy as np
-import outlier
-
 
 class URL_Length_Extraction(object):
     """description of class"""
@@ -45,47 +42,3 @@ class URL_Length_Extraction(object):
         feature_vector = self.build_feature_vector(url_lengths)
 
         return feature_vector
-
-def main():
-
-
-    print("**************************")
-    print("Reading data...")
-
-    # Reading Data
-    training_data = parser.read_data('../Logfiles/Labeled/normalTrafficTraining.txt')
-    test_clean = parser.read_data('../Logfiles/Labeled/normalTrafficTest.txt')
-    test_anomalous = parser.read_data('../Logfiles/Labeled/anomalousTrafficTest.txt')
-
-    training_data = parser.append_parameter_to_request(training_data)
-    test_clean = parser.append_parameter_to_request(test_clean)
-    test_anomalous = parser.append_parameter_to_request(test_anomalous)
-    print("**************************")
-    print("Extracting URL Length...")
-    
-    urlLength = URL_Length_Extraction()
-    training_vectors = urlLength.extract_feature(training_data)
-    test_vectors_clean = urlLength.extract_feature(test_clean)
-    test_vectors_anomalous = urlLength.extract_feature(test_anomalous)
-
-
-
-    
-    outlier.local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous)
-    outlier.one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous)
-    
-    
-    print("Done.")
-    print("**************************")
-
-
-if __name__ == "__main__":
-    main()
-
-
-
-
-
-
-
-
