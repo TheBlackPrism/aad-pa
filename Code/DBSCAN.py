@@ -1,10 +1,6 @@
-import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sp
 from sklearn.cluster import DBSCAN
-import logfileparser as parser
-from NGram import *
-import outlier
 
 #inspired (aka copied) from: https://stackoverflow.com/questions/27822752/scikit-learn-predicting-new-points-with-dbscan
 def __dbscan_predict(dbscan_model, X_new, metric=sp.spatial.distance.euclidean):

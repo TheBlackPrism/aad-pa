@@ -1,9 +1,5 @@
 import math
 import numpy as np
-import pandas as pd
-import matplotlib as matplot
-import matplotlib.pyplot as plt
-import logfileparser as parser
 import numbers
 
 class K_Means:

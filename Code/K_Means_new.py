@@ -1,9 +1,5 @@
-import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.cluster import KMeans
-import logfileparser as parser
-from NGram import *
-from URL_Length_Extraction import *
 
 def k_means(training_vectors,test_vectors_clean, test_vectors_anomalous):
 
