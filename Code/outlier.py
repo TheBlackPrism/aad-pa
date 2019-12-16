@@ -13,7 +13,7 @@ def local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_a
     print("Starting Local Outlier Fitting...")
 
     # Fitting model for novel predictions
-    lof = LocalOutlierFactor(novelty = True, contamination = 'auto', algorithm='auto', n_neighbors = 30, n_jobs = -1)
+    lof = LocalOutlierFactor(novelty = True, contamination = 'auto', algorithm = 'auto', n_neighbors = 20, n_jobs = -1)
     print("Fitting with Parameters: ", lof.get_params())
     lof.fit(training_vectors)
     result_training = lof.predict(training_vectors)
@@ -59,7 +59,7 @@ def split_anomalous_clean(test_vectors, result):
     list_anomalous = []
     
     for i in range(len(test_vectors)):
-        if result[i] == 1:  
+        if result[i] == 1:
             list_clean.append(test_vectors[i])
         else:
             list_anomalous.append(test_vectors[i])

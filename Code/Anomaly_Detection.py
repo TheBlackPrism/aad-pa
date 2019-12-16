@@ -98,6 +98,24 @@ class Anomaly_Detection():
 
         return np.asarray(result)  
 
+    def save_false_identified_request(self, filename, requests, result, save_clean_requests):
+        """Writes wrong identified requests into the specified file
+        """
+        f = open(filename, "w", encoding="utf-8")
+        f.write(filename + "\n\n")
+
+        if save_clean_requests:
+            comparator = 1
+        else:
+            comparator = -1
+
+        for i in range(len(result)):
+            if result[i] == comparator:
+                request = requests[i]
+                f.write(request["Request"])
+                f.write("\n")
+        f.close()
+
 def evaluate_detection(result_clean, result_anomalous, result_training = np.array([])):
     """Evaluates the detection rate of a model and prints it
     """
@@ -243,8 +261,9 @@ def main():
     print("Dataset: " + dataset)
     print("Algorithm: " + alg_name.upper())
     print("Scaler: " + scaler_name.capitalize())
-    print("Anomalous Samples: %d" % len(result_overall_anomalous))
-    print("Clean Samples: %d" % len(result_overall_clean))
+    print("Training Samples: %d" % len(result_training_ng))
+    print("Anomalous Samples: %d" % len(result_anomalous_ng))
+    print("Clean Samples: %d" % len(result_clean_ng))
 
     #Evaluate N-Grams
     print("\nN-Gram Evaluation")
@@ -264,6 +283,10 @@ def main():
     print("Overall Evaluation")
     evaluate_detection(result_overall_clean, result_overall_anomalous)
     print()
+
+    # The Following two method calls can be used to analyse wrong identified requests in this examples only from the N-Grams
+    #ad.save_false_identified_request("Wrong identified Anomalous Requests " + alg_name.upper() + ".txt", test_anomalous, result_anomalous_ng, True)
+    #ad.save_false_identified_request("Wrong identified Clean Requests " + alg_name.upper() + ".txt", test_clean, result_clean_ng, False)
 
 if __name__ == "__main__":
     main()
