@@ -1,15 +1,16 @@
-import logfileparser as parser
+from pathlib import Path
+import os
 import numpy as np
-import matplotlib as matplot
-import matplotlib.pyplot as plt
-import outlier
+import sklearn.preprocessing as pp
+
+import Logfileparser as parser
 from NGram import *
 from URL_Length_Extraction import *
-from pathlib import Path
+
 import DBSCAN
-import os
+import SVM
+import LOF
 import K_Means_new
-import sklearn.preprocessing as pp
 
 class Anomaly_Detection():
     """description of class"""
@@ -65,10 +66,10 @@ class Anomaly_Detection():
         """Applies the specified algorithm onto the feature sets.
         """
         if alg_name == 'lof':
-            result_clean, result_anomalous, result_training = outlier.local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous)
+            result_clean, result_anomalous, result_training = LOF.local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous)
 
         elif alg_name == 'svm':
-            result_clean, result_anomalous, result_training = outlier.one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous)
+            result_clean, result_anomalous, result_training = SVM.one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous)
 
         elif alg_name == 'dbscan':
             result_clean,result_anomalous, result_training = DBSCAN.dbscan(training_vectors,test_vectors_clean,test_vectors_anomalous)
