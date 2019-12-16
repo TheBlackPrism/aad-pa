@@ -162,8 +162,3 @@ def read_csv(url, unnecessary_columns = 0):
         features.append(list(map(float, feature[:-unnecessary_columns]))) 
     return np.asarray(features)
 
-if __name__ == '__main__':
-    # Test by reading all the datasets
-    dict = read_data("../Logfiles/Labeled/normalTrafficTraining.txt")
-    dict = read_data("../Logfiles/Labeled/normalTrafficTest.txt")
-    dict = read_data("../Logfiles/Labeled/anomalousTrafficTest.txt")
