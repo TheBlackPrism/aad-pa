@@ -47,12 +47,6 @@ class Anomaly_Detection():
         elif scaler_name == 'robust':
             scaler = pp.RobustScaler()
 
-        elif scaler_name == 'power':
-            scaler = pp.PowerTransformer()
-
-        elif scaler_name == 'quantile':
-            scaler = pp.QuantileTransformer()
-
         else:
             raise NameError("Invalid Scaler Name")
         
@@ -149,7 +143,7 @@ def main():
 
     print("**************************")
     print('Please enter the scaler you would like to use...')
-    print('none\nminmax\nstandard\nrobust\npower\nquantile')
+    print('none\nminmax\nstandard\nrobust')
 
     scaler_name = str(input('Scaler: ')).lower()
 
