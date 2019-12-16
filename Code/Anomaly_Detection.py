@@ -1,15 +1,16 @@
-import logfileparser as parser
+from pathlib import Path
+import os
 import numpy as np
-import matplotlib as matplot
-import matplotlib.pyplot as plt
-import outlier
+import sklearn.preprocessing as pp
+
+import Logfileparser as parser
 from NGram import *
 from URL_Length_Extraction import *
-from pathlib import Path
+
 import DBSCAN
-import os
+import SVM
+import LOF
 import K_Means_new
-import sklearn.preprocessing as pp
 
 class Anomaly_Detection():
     """description of class"""
@@ -46,12 +47,6 @@ class Anomaly_Detection():
         elif scaler_name == 'robust':
             scaler = pp.RobustScaler()
 
-        elif scaler_name == 'power':
-            scaler = pp.PowerTransformer()
-
-        elif scaler_name == 'quantile':
-            scaler = pp.QuantileTransformer()
-
         else:
             raise NameError("Invalid Scaler Name")
         
@@ -65,10 +60,10 @@ class Anomaly_Detection():
         """Applies the specified algorithm onto the feature sets.
         """
         if alg_name == 'lof':
-            result_clean, result_anomalous, result_training = outlier.local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous)
+            result_clean, result_anomalous, result_training = LOF.local_outlier_detection(training_vectors, test_vectors_clean, test_vectors_anomalous)
 
         elif alg_name == 'svm':
-            result_clean, result_anomalous, result_training = outlier.one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous)
+            result_clean, result_anomalous, result_training = SVM.one_class_svm(training_vectors, test_vectors_clean, test_vectors_anomalous)
 
         elif alg_name == 'dbscan':
             result_clean,result_anomalous, result_training = DBSCAN.dbscan(training_vectors,test_vectors_clean,test_vectors_anomalous)
@@ -98,20 +93,42 @@ class Anomaly_Detection():
 
         return np.asarray(result)  
 
-def evaluate_detection(result_clean, result_anomalous, result_training = np.array([])):
-    """Evaluates the detection rate of a model and prints it
-    """
-    result_clean = np.asarray(result_clean)       
-    result_anomalous = np.asarray(result_anomalous)
-    if len(result_training) > 0:
-        accuracy_training = (float(np.count_nonzero(result_training == 1))) / len(result_training) * 100
-        print("Trainingset Accuracy: %.2f%%" % accuracy_training)
+    def save_false_identified_request(self, filename, requests, result, save_clean_requests):
+        """Writes wrong identified requests into the specified file
+        """
+        f = open(filename, "w", encoding="utf-8")
+        f.write(filename + "\n\n")
 
-    accuracy_anomalous = (float(np.count_nonzero(result_anomalous == -1))) / len(result_anomalous) * 100
-    accuracy_clean = (float(np.count_nonzero(result_clean == 1))) / len(result_clean) * 100
+        if save_clean_requests:
+            comparator = 1
+        else:
+            comparator = -1
+
+        for i in range(len(result)):
+            if result[i] == comparator:
+                request = requests[i]
+                f.write(request["Request"])
+                f.write("\n")
+        f.close()
+
+    def evaluate_detection(self, result_clean, result_anomalous, result_training = np.array([])):
+        """Evaluates the detection rate of a model and prints it
+        """
+        result_clean = np.asarray(result_clean)       
+        result_anomalous = np.asarray(result_anomalous)
+
+        if np.count_nonzero(result_training > 1) > 0 or np.count_nonzero(result_clean > 1) > 0 or np.count_nonzero(result_anomalous > 1) > 0:
+            raise NameError("Unexpected Result in evaluation (At least one result is greater than 1)")
+
+        if len(result_training) > 0:
+            accuracy_training = (float(np.count_nonzero(result_training == 1))) / len(result_training) * 100
+            print("Trainingset Accuracy: %.2f%%" % accuracy_training)
+
+        accuracy_anomalous = (float(np.count_nonzero(result_anomalous == -1))) / len(result_anomalous) * 100
+        accuracy_clean = (float(np.count_nonzero(result_clean == 1))) / len(result_clean) * 100
     
-    print("True Positive: %.2f%%" % accuracy_anomalous)
-    print("False Positive: %.2f%%" % (100 - accuracy_clean))
+        print("True Positive: %.2f%%" % accuracy_anomalous)
+        print("False Positive: %.2f%%" % (100 - accuracy_clean))
 
 
 def main():
@@ -130,7 +147,7 @@ def main():
 
     print("**************************")
     print('Please enter the scaler you would like to use...')
-    print('none\nminmax\nstandard\nrobust\npower\nquantile')
+    print('none\nminmax\nstandard\nrobust')
 
     scaler_name = str(input('Scaler: ')).lower()
 
@@ -243,27 +260,32 @@ def main():
     print("Dataset: " + dataset)
     print("Algorithm: " + alg_name.upper())
     print("Scaler: " + scaler_name.capitalize())
-    print("Anomalous Samples: %d" % len(result_overall_anomalous))
-    print("Clean Samples: %d" % len(result_overall_clean))
+    print("Training Samples: %d" % len(result_training_ng))
+    print("Anomalous Samples: %d" % len(result_anomalous_ng))
+    print("Clean Samples: %d" % len(result_clean_ng))
 
     #Evaluate N-Grams
     print("\nN-Gram Evaluation")
-    evaluate_detection(result_clean_ng, result_anomalous_ng, result_training_ng)
+    ad.evaluate_detection(result_clean_ng, result_anomalous_ng, result_training_ng)
     
     #Evaluate 1-Grams
     print("\n1-Gram Evaluation")
-    evaluate_detection(result_clean_onegram, result_anomalous_onegram, result_training_onegram)
+    ad.evaluate_detection(result_clean_onegram, result_anomalous_onegram, result_training_onegram)
 
     #Evaluate URL-Length
     print("\nURL Length Evaluation")
-    evaluate_detection(result_clean_url_length, result_anomalous_url_length, result_training_url_length)
+    ad.evaluate_detection(result_clean_url_length, result_anomalous_url_length, result_training_url_length)
 
     
     print("**************************")
     #overall evaluation
     print("Overall Evaluation")
-    evaluate_detection(result_overall_clean, result_overall_anomalous)
+    ad.evaluate_detection(result_overall_clean, result_overall_anomalous)
     print()
+
+    # The Following two method calls can be used to analyse wrong identified requests in this examples only from the N-Grams
+    #ad.save_false_identified_request("Wrong identified Anomalous Requests " + alg_name.upper() + ".txt", test_anomalous, result_anomalous_ng, True)
+    #ad.save_false_identified_request("Wrong identified Clean Requests " + alg_name.upper() + ".txt", test_clean, result_clean_ng, False)
 
 if __name__ == "__main__":
     main()

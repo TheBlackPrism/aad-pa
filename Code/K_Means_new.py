@@ -1,9 +1,5 @@
-import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.cluster import KMeans
-import logfileparser as parser
-from NGram import *
-from URL_Length_Extraction import *
 
 def k_means(training_vectors,test_vectors_clean, test_vectors_anomalous):
 
@@ -11,6 +7,8 @@ def k_means(training_vectors,test_vectors_clean, test_vectors_anomalous):
                 n_init=10, max_iter=300, 
                 tol=1e-04, random_state=0
                 )
+
+    print("Fitting with Parameters: ", kmeans.get_params())
     clusters = kmeans.fit_predict(training_vectors)
     centroids = kmeans.cluster_centers_
     labels = kmeans.labels_
@@ -30,9 +28,6 @@ def k_means(training_vectors,test_vectors_clean, test_vectors_anomalous):
         elif(labels[j]== 2.0):
             cluster2.append(training_vectors[j])
 
-
-
-        
 
     """get the radius for each cluster.
     In lack of a better method just compute the datapoint farthest away from the centroid and take the
@@ -89,25 +84,21 @@ def k_means(training_vectors,test_vectors_clean, test_vectors_anomalous):
     r2 = clusters_radii[2]
     c2 = centroids[2]
 
-
-
     dist0 = 0
     dist1 = 0
     dist2 = 0
     for i in range(len(test_vectors_clean)):
-
         dist0 = np.linalg.norm(c0-test_vectors_clean[i])
         dist1 = np.linalg.norm(c1-test_vectors_clean[i])
         dist2 = np.linalg.norm(c2-test_vectors_clean[i])
+
         if dist0 <= r0 or dist1 <= r1 or dist2 <= r2:
             result_clean.append(1)
             #could_be_assigned_clean_test_vector.append(test_vectors_clean[i])
         else:
             #result_clean.append(test_vectors_clean[i])
             result_clean.append(-1)
-            
 
-   
         dist0 = 0
         dist1 = 0
         dist2 = 0
@@ -116,18 +107,16 @@ def k_means(training_vectors,test_vectors_clean, test_vectors_anomalous):
     dist1 = 0
     dist2 = 0
     for i in range(len(training_vectors)):
-
         dist0 = np.linalg.norm(c0-training_vectors[i])
         dist1 = np.linalg.norm(c1-training_vectors[i])
         dist2 = np.linalg.norm(c2-training_vectors[i])
+
         if dist0 <= r0 or dist1 <= r1 or dist2 <= r2:
             result_training.append(1)
         else:
             #result_clean.append(test_vectors_clean[i])
             result_training.append(-1)
             
-
-   
         dist0 = 0
         dist1 = 0
         dist2 = 0
@@ -136,7 +125,6 @@ def k_means(training_vectors,test_vectors_clean, test_vectors_anomalous):
     #undetected_anomalies_in_anomalous_test_vector = [] #would be bad. The vectors shouldn't belong to any cluster
     result_anomalous =[]
 
-
     dist0 = 0
     dist1 = 0
     dist2 = 0
@@ -144,7 +132,6 @@ def k_means(training_vectors,test_vectors_clean, test_vectors_anomalous):
         dist0 = np.linalg.norm(c0 - test_vectors_anomalous[i])
         dist1 = np.linalg.norm(c1 - test_vectors_anomalous[i])
         dist2 = np.linalg.norm(c2 - test_vectors_anomalous[i])
-    
 
         if dist0 <= r0 or dist1 <= r1 or dist2 <= r2:
             #undetected_anomalies_in_anomalous_test_vector.append(test_vectors_anomalous[i])
@@ -156,8 +143,6 @@ def k_means(training_vectors,test_vectors_clean, test_vectors_anomalous):
         dist0 = 0
         dist1 = 0
         dist2 = 0
-
-
 
     print("Predicting successful!")    
     print("**************************")
