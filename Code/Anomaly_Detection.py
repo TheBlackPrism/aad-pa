@@ -260,9 +260,9 @@ def main():
     print("Dataset: " + dataset)
     print("Algorithm: " + alg_name.upper())
     print("Scaler: " + scaler_name.capitalize())
-    print("Training Samples: %d" % len(result_training_ng))
-    print("Anomalous Samples: %d" % len(result_anomalous_ng))
-    print("Clean Samples: %d" % len(result_clean_ng))
+    print("Training Samples: %d" % len(training_data))
+    print("Anomalous Samples: %d" % len(test_anomalous))
+    print("Clean Samples: %d" % len(test_clean))
 
     #Evaluate N-Grams
     print("\nN-Gram Evaluation")
