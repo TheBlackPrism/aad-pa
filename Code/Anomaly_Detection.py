@@ -10,7 +10,7 @@ from URL_Length_Extraction import *
 import DBSCAN
 import SVM
 import LOF
-import K_Means_new
+import K_Means
 
 class Anomaly_Detection():
     """description of class"""
@@ -69,7 +69,7 @@ class Anomaly_Detection():
             result_clean,result_anomalous, result_training = DBSCAN.dbscan(training_vectors,test_vectors_clean,test_vectors_anomalous)
         
         elif alg_name == 'kmeans':
-            result_clean,result_anomalous, result_training = K_Means_new.k_means(training_vectors,test_vectors_clean,test_vectors_anomalous)
+            result_clean,result_anomalous, result_training = K_Means.k_means(training_vectors,test_vectors_clean,test_vectors_anomalous)
 
         else:
             raise NameError("Invalid Algorithm Name")

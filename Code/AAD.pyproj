@@ -26,7 +26,6 @@
     <Compile Include="Anomaly_Detection.py" />
     <Compile Include="DBSCAN.py" />
     <Compile Include="K_Means.py" />
-    <Compile Include="K_Means_new.py" />
     <Compile Include="Logfileparser.py" />
     <Compile Include="SVM.py">
       <SubType>Code</SubType>
