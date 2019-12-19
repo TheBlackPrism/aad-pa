@@ -2,7 +2,7 @@ import numpy as np
 import scipy as sp
 from sklearn.cluster import DBSCAN
 
-#inspired (aka copied) from: https://stackoverflow.com/questions/27822752/scikit-learn-predicting-new-points-with-dbscan
+#Found on: https://stackoverflow.com/questions/27822752/scikit-learn-predicting-new-points-with-dbscan
 def __dbscan_predict(dbscan_model, X_new, metric=sp.spatial.distance.euclidean):
     # Result is noise by default
     y_new = np.ones(shape=len(X_new), dtype=int)*-1 
@@ -21,10 +21,8 @@ def dbscan(training_vectors, clean_vectors, anomalous_vectors, eps=0.3, min_samp
     print("Starting DB-Scan Fitting...")
 
     #Building the clustering model
-    #eps is the radius of the cluster
-    """eps is the radius of the cluster.
-    min_samples gives the minimum number of samples that must be found within
-    eps to form a cluster.
+    """eps is the max. distance between two neighbouring datapoints.
+    min_samples gives the minimum number of samples that must be found to form a cluster.
     Both parameters must be chosen carefully, depending on the dataset.
     """
     dbscan = DBSCAN(eps = eps, min_samples=min_samples)
