@@ -13,7 +13,7 @@ import LOF
 import K_Means
 
 class Anomaly_Detection():
-    """description of class"""
+    
     def __init__(self):
         pass
 
@@ -202,13 +202,6 @@ def main():
     print("**************************")
     
 
-    
-    #if alg_name == 'svm':
-     #   url_alg = 'lof'
-
-    #else:
-       # url_alg = alg_name
-
     print("Applying Scaler...")
     training_vectors_one_gram_paramteter, test_vectors_one_gram_clean_parameter, test_vectors_one_gram_anomalous_parameter = ad.apply_scaler(scaler_name, training_vectors_one_gram_paramteter, test_vectors_one_gram_clean_parameter, test_vectors_one_gram_anomalous_parameter)
     training_vectors_one_gram_url, test_vectors_one_gram_clean_url, test_vectors_one_gram_anomalous_url = ad.apply_scaler(scaler_name, training_vectors_one_gram_url, test_vectors_one_gram_clean_url, test_vectors_one_gram_anomalous_url)
@@ -221,7 +214,6 @@ def main():
 
     # Workaround that prevents svm applied to url as features are not spread in the url and points on the same place 
     # cannot form a cluster in svm
-
     if alg_name != 'svm':
         print("Analysing URL N-Grams:")
         result_clean_ng_url,result_anomalous_ng_url, result_training_ng_url = ad.apply_algorithm(alg_name,training_vectors_url,test_vectors_clean_url,test_vectors_anomalous_url)
@@ -253,7 +245,6 @@ def main():
     result_overall_clean = ad.merge_results(result_clean_onegram_ngram, result_clean_url_length)
     result_overall_anomalous = ad.merge_results(result_anomalous_onegram_ngram,result_anomalous_url_length)
 
-    # parser.write_csv("One Grams.csv", onegram_parameter.ngrams, test_vectors_one_gram_clean_parameter)
 
     print('Starting evaluation...')
     
@@ -289,5 +280,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
