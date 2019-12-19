@@ -3,7 +3,7 @@ import os
 import numpy as np
 import sklearn.preprocessing as pp
 
-import logfileparser as parser
+import Logfileparser as parser
 from NGram import *
 from URL_Length_Extraction import *
 
@@ -280,5 +280,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
