@@ -1,7 +1,6 @@
 import numpy as np
 
 class URL_Length_Extraction(object):
-    """description of class"""
 
     def __init__(self):
         pass
